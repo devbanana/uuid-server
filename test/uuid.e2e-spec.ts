@@ -1,12 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import * as request from 'supertest';
+import * as supertest from 'supertest';
 import { UuidModule } from '../src/uuid/uuid.module';
 import { INestApplication } from '@nestjs/common';
 import { UuidV1 } from '../src/uuid/domain/uuid-v1';
 
 describe('uuid', () => {
-  const uuid = 'aa768af0-2adc-11ec-be43-cfd05c05f21f';
   let app: INestApplication;
+  let request: supertest.SuperTest<supertest.Test>;
+
+  const uuid = 'aa768af0-2adc-11ec-be43-cfd05c05f21f';
   const uuidService = {
     generate: jest.fn(() => UuidV1.fromUuid(uuid)),
   };
@@ -21,30 +23,25 @@ describe('uuid', () => {
 
     app = module.createNestApplication();
     await app.init();
+
+    request = supertest(app.getHttpServer());
   });
 
-  it('should generate a UUID V1', () => {
-    return request(app.getHttpServer())
-      .get('/uuid/v1/generate')
-      .expect(200)
-      .expect({ uuid })
-      .expect(() => {
-        expect(uuidService.generate).toHaveBeenCalled();
-        expect(uuidService.generate).toHaveBeenCalledWith(undefined);
-      });
+  it('should generate a UUID V1', async () => {
+    await request.get('/uuid/v1/generate').expect(200).expect({ uuid });
+
+    expect(uuidService.generate).toHaveBeenCalled();
+    expect(uuidService.generate).toHaveBeenCalledWith(undefined);
   });
 
-  it('should use the given time for generating the UUID', () => {
-    return request(app.getHttpServer())
+  it('should use the given time for generating the UUID', async () => {
+    await request
       .get('/uuid/v1/generate?time=2021-10-12T00:00:00Z')
       .expect(200)
-      .expect({ uuid })
-      .expect(() => {
-        expect(uuidService.generate).toHaveBeenCalled();
-        expect(uuidService.generate).toHaveBeenCalledWith(
-          '2021-10-12T00:00:00Z',
-        );
-      });
+      .expect({ uuid });
+
+    expect(uuidService.generate).toHaveBeenCalled();
+    expect(uuidService.generate).toHaveBeenCalledWith('2021-10-12T00:00:00Z');
   });
 
   afterEach(async () => {

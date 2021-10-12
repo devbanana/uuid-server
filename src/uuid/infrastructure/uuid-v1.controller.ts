@@ -1,4 +1,10 @@
-import { Controller, Get } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { GenerateUuidV1Command } from '../application/generate-uuid-v1.command';
 
@@ -11,9 +17,12 @@ export class UuidV1Controller {
   constructor(private readonly commandBus: CommandBus) {}
 
   @Get('generate')
-  async generate(): Promise<GenerateUuidResponse> {
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async generate(
+    @Query() command: GenerateUuidV1Command,
+  ): Promise<GenerateUuidResponse> {
     const uuid = await this.commandBus.execute<GenerateUuidV1Command, string>(
-      new GenerateUuidV1Command(),
+      command,
     );
     return { uuid };
   }

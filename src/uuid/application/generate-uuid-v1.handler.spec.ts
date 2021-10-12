@@ -2,6 +2,7 @@ import { GenerateUuidV1Handler } from './generate-uuid-v1.handler';
 import { GenerateUuidV1Command } from './generate-uuid-v1.command';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UuidV1 } from '../domain/uuid-v1';
+import { UuidTime } from '../domain/uuid-time';
 
 describe('GenerateUuidV1Handler', () => {
   const uuid = 'd57854d0-2aab-11ec-8da1-817a6c23fd17';
@@ -43,6 +44,12 @@ describe('GenerateUuidV1Handler', () => {
     );
 
     expect(uuidResult).toBe(uuid);
-    expect(mockService.generate).toHaveBeenCalledWith(time);
+    expect(mockService.generate).toHaveBeenCalledWith(
+      UuidTime.fromString(time),
+    );
+  });
+
+  afterEach(() => {
+    mockService.generate.mockClear();
   });
 });

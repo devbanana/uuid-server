@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UuidService } from './uuid.service';
 import { validate, version } from 'uuid';
+import { UuidTime } from '../domain/uuid-time';
 
 describe('UuidService', () => {
   let provider: UuidService;
@@ -26,7 +27,7 @@ describe('UuidService', () => {
 
   it('should use the given time', () => {
     const time = '2021-10-11 05:43:27';
-    const uuid = provider.generate(time);
+    const uuid = provider.generate(UuidTime.fromString(time));
 
     expect(uuid.getTime()).toStrictEqual(new Date(time));
   });

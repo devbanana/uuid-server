@@ -3,6 +3,7 @@ import * as supertest from 'supertest';
 import { UuidModule } from '../src/uuid/uuid.module';
 import { INestApplication } from '@nestjs/common';
 import { UuidV1 } from '../src/uuid/domain/uuid-v1';
+import { UuidTime } from '../src/uuid/domain/uuid-time';
 
 describe('uuid', () => {
   let app: INestApplication;
@@ -41,7 +42,9 @@ describe('uuid', () => {
       .expect({ uuid });
 
     expect(uuidService.generate).toHaveBeenCalled();
-    expect(uuidService.generate).toHaveBeenCalledWith('2021-10-12T00:00:00Z');
+    expect(uuidService.generate).toHaveBeenCalledWith(
+      UuidTime.fromString('2021-10-12T00:00:00Z'),
+    );
   });
 
   afterEach(async () => {

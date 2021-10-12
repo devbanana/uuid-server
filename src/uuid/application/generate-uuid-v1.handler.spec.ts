@@ -35,4 +35,14 @@ describe('GenerateUuidV1Handler', () => {
     expect(mockService.generate).toHaveBeenCalled();
     expect(mockService.generate).toHaveBeenCalledWith(undefined);
   });
+
+  it('should pass the time to the UUID service', async () => {
+    const time = '2021-10-12T00:00:00Z';
+    const uuidResult = await handler.execute(
+      new GenerateUuidV1Command({ time }),
+    );
+
+    expect(uuidResult).toBe(uuid);
+    expect(mockService.generate).toHaveBeenCalledWith(time);
+  });
 });

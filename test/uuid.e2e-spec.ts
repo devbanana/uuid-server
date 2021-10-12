@@ -27,12 +27,23 @@ describe('uuid', () => {
     return request(app.getHttpServer())
       .get('/uuid/v1/generate')
       .expect(200)
-      .expect({
-        uuid,
-      })
+      .expect({ uuid })
       .expect(() => {
         expect(uuidService.generate).toHaveBeenCalled();
         expect(uuidService.generate).toHaveBeenCalledWith(undefined);
+      });
+  });
+
+  it('should use the given time for generating the UUID', () => {
+    return request(app.getHttpServer())
+      .get('/uuid/v1/generate?time=2021-10-12T00:00:00Z')
+      .expect(200)
+      .expect({ uuid })
+      .expect(() => {
+        expect(uuidService.generate).toHaveBeenCalled();
+        expect(uuidService.generate).toHaveBeenCalledWith(
+          '2021-10-12T00:00:00Z',
+        );
       });
   });
 

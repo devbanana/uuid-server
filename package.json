@@ -1,10 +1,14 @@
 {
   "name": "uuid-server",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "An API for generating and parsing UUIDs",
+  "author": {
+    "name": "Brandon Olivares",
+    "email": "programmer2188@gmail.com",
+    "url": "https://www.devbanana.me"
+  },
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",

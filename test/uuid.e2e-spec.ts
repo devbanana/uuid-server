@@ -8,7 +8,7 @@ describe('uuid', () => {
   const uuid = 'aa768af0-2adc-11ec-be43-cfd05c05f21f';
   let app: INestApplication;
   const uuidService = {
-    generate: () => UuidV1.fromUuid(uuid),
+    generate: jest.fn(() => UuidV1.fromUuid(uuid)),
   };
 
   beforeEach(async () => {
@@ -29,6 +29,10 @@ describe('uuid', () => {
       .expect(200)
       .expect({
         uuid,
+      })
+      .expect(() => {
+        expect(uuidService.generate).toHaveBeenCalled();
+        expect(uuidService.generate).toHaveBeenCalledWith(undefined);
       });
   });
 

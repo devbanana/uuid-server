@@ -47,6 +47,21 @@ describe('uuid', () => {
     );
   });
 
+  it('requires a valid time if given', async () => {
+    await request.get('/uuid/v1/generate?time=foo').expect(400);
+  });
+
+  it('cannot have a time before 1582-10-15 at midnight UTC', async () => {
+    await request
+      .get('/uuid/v1/generate?time=1582-10-14T23:59:59Z')
+      .expect(400)
+      .expect({
+        statusCode: 400,
+        message: ['time cannot be before 1582-10-15T00:00:00Z'],
+        error: 'Bad Request',
+      });
+  });
+
   afterEach(async () => {
     await app.close();
   });

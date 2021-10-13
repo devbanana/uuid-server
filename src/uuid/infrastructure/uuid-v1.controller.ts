@@ -17,7 +17,7 @@ export class UuidV1Controller {
   constructor(private readonly commandBus: CommandBus) {}
 
   @Get('generate')
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(new ValidationPipe({ transform: true, stopAtFirstError: true }))
   async generate(
     @Query() command: GenerateUuidV1Command,
   ): Promise<GenerateUuidResponse> {

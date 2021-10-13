@@ -6,6 +6,7 @@ import {
   Max,
   Min,
 } from 'class-validator';
+import MinDateString from './min-date-string.validator';
 
 interface CommandOptions {
   time?: string;
@@ -15,6 +16,7 @@ interface CommandOptions {
 
 export class GenerateUuidV1Command {
   @IsOptional()
+  @MinDateString('1582-10-15T00:00:00Z')
   @IsISO8601()
   public readonly time: string | undefined;
   @IsOptional()

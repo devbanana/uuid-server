@@ -15,6 +15,15 @@ describe('GenerateUuidV1Command', () => {
     expect(errors[0].constraints).toHaveProperty('isIso8601');
   });
 
+  it('should require time to not be before 1582-10-15 at midnight UTC', async () => {
+    const command = new GenerateUuidV1Command({ time: '1582-10-14T23:59:59Z' });
+    const errors = await validate(command);
+
+    expect(errors).toHaveLength(1);
+    expect(errors[0].property).toBe('time');
+    expect(errors[0].constraints).toHaveProperty('minDateString');
+  });
+
   it('should require clockSeq to be at least 0', async () => {
     const command = new GenerateUuidV1Command({ clockSeq: -3 });
     const errors = await validate(command);

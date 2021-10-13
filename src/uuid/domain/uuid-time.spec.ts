@@ -1,4 +1,4 @@
-import { UuidTime } from './uuid-time';
+import { gregorianStart, UuidTime } from './uuid-time';
 
 describe('UuidTime', () => {
   it('should be defined', () => {
@@ -13,6 +13,18 @@ describe('UuidTime', () => {
   it('should not accept an invalid time', () => {
     expect(() => UuidTime.fromString('foo')).toThrowError(
       /time must be a valid date string/,
+    );
+  });
+
+  it('cannot be prior to 1582-10-15', () => {
+    expect(() => UuidTime.fromString('1582-10-14T23:59:59Z')).toThrowError(
+      /time cannot be before 1582-10-15 at 00:00:00 UTC/,
+    );
+  });
+
+  it('can be exactly 1582-10-15 at midnight UTC', () => {
+    expect(UuidTime.fromString('1582-10-15T00:00:00Z').asMilliseconds()).toBe(
+      gregorianStart,
     );
   });
 });

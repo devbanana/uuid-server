@@ -19,9 +19,9 @@ export default function MinDateString(
     validator: {
       validate(
         value: string,
-        validationArguments?: ValidationArguments,
+        validationArguments: ValidationArguments,
       ): boolean {
-        return minDateString(value, validationArguments?.constraints[0]);
+        return minDateString(value, validationArguments.constraints[0]);
       },
       defaultMessage: buildMessage(eachPrefix => {
         return `${eachPrefix}$property cannot be before $constraint1`;

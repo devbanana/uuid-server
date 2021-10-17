@@ -27,4 +27,16 @@ describe('UuidTime', () => {
       gregorianStart,
     );
   });
+
+  it('cannot be later than 5236-03-31 at 21:21:00.683 UTC', () => {
+    expect(() => UuidTime.fromString('5236-03-31T21:21:00.684Z')).toThrowError(
+      /time cannot be after 5236-03-31 at 21:21:00.683 UTC/,
+    );
+  });
+
+  it('can be exactly 5236-03-31 at 21:21:00.683 UTC', () => {
+    expect(() =>
+      UuidTime.fromString('5236-03-31T21:21:00.683Z').asMilliseconds(),
+    ).not.toThrowError();
+  });
 });

@@ -24,6 +24,33 @@ describe('GenerateUuidV1Command', () => {
     expect(errors[0].constraints).toHaveProperty('minDateString');
   });
 
+  it('should allow time to be exactly 1582-10-15 at midnight UTC', async () => {
+    const command = new GenerateUuidV1Command({ time: '1582-10-15T00:00:00Z' });
+    const errors = await validate(command);
+
+    expect(errors).toHaveLength(0);
+  });
+
+  it('should require time to not be after 5236-03-31 at 21:21:00.684 UTC', async () => {
+    const command = new GenerateUuidV1Command({
+      time: '5236-03-31T21:21:00.684Z',
+    });
+    const errors = await validate(command);
+
+    expect(errors).toHaveLength(1);
+    expect(errors[0].property).toBe('time');
+    expect(errors[0].constraints).toHaveProperty('maxDateString');
+  });
+
+  it('should allow time to be exactly 5236-03-31 at 21:21:00.683 UTC', async () => {
+    const command = new GenerateUuidV1Command({
+      time: '5236-03-31T21:21:00.683Z',
+    });
+    const errors = await validate(command);
+
+    expect(errors).toHaveLength(0);
+  });
+
   it('should require clockSeq to be at least 0', async () => {
     const command = new GenerateUuidV1Command({ clockSeq: -3 });
     const errors = await validate(command);

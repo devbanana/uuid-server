@@ -20,7 +20,7 @@ export class UuidV1 {
     return this.uuid;
   }
 
-  getTime(): UuidTime {
+  get time(): UuidTime {
     const high = parseInt(this.uuid.substr(14, 4), 16) & 0xfff;
     const mid = parseInt(this.uuid.substr(9, 4), 16);
     const low = parseInt(this.uuid.substr(0, 8), 16);
@@ -32,7 +32,7 @@ export class UuidV1 {
     return UuidTime.fromMilliseconds(uuidTime);
   }
 
-  getClockSequence(): ClockSequence {
+  get clockSequence(): ClockSequence {
     const bytes = parseInt(this.uuid.substr(19, 4), 16);
 
     return ClockSequence.fromNumber(bytes & 0x3fff);

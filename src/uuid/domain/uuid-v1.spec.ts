@@ -36,12 +36,12 @@ describe('UuidV1', () => {
   });
 
   it("should extract the UUID's time", () => {
-    expect(uuidV1.getTime()).toStrictEqual(
+    expect(uuidV1.time).toStrictEqual(
       UuidTime.fromString('2021-10-11T17:15:18.426Z'),
     );
   });
 
   it("should extract the UUID's clock sequence", () => {
-    expect(uuidV1.getClockSequence().asNumber()).toBe(0x3ce4);
+    expect(uuidV1.clockSequence.asNumber()).toBe(0x3ce4);
   });
 });

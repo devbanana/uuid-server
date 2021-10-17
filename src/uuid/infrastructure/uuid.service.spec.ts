@@ -30,7 +30,7 @@ describe('UuidService', () => {
     const time = '2021-10-11 05:43:27';
     const uuid = provider.generate(UuidTime.fromString(time));
 
-    expect(uuid.getTime()).toStrictEqual(UuidTime.fromString(time));
+    expect(uuid.time).toStrictEqual(UuidTime.fromString(time));
   });
 
   it('should use the given clock sequence', () => {
@@ -40,6 +40,6 @@ describe('UuidService', () => {
       ClockSequence.fromNumber(clockSeq),
     );
 
-    expect(uuid.getClockSequence().asNumber()).toBe(clockSeq);
+    expect(uuid.clockSequence.asNumber()).toBe(clockSeq);
   });
 });

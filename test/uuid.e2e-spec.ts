@@ -134,6 +134,15 @@ describe('uuid', () => {
     );
   });
 
+  it('should allow clock sequence to be 0', async () => {
+    await request.get('/uuid/v1/generate?clockSeq=0').expect(200);
+
+    expect(uuidService.generate).toHaveBeenCalledWith(
+      undefined,
+      ClockSequence.fromNumber(0),
+    );
+  });
+
   afterEach(async () => {
     await app.close();
     uuidService.generate.mockClear();

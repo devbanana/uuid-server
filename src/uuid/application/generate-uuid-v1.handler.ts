@@ -16,9 +16,10 @@ export class GenerateUuidV1Handler
 
   execute(command: GenerateUuidV1Command): Promise<string> {
     const time = command.time ? UuidTime.fromString(command.time) : undefined;
-    const clockSeq = command.clockSeq
-      ? ClockSequence.fromNumber(command.clockSeq)
-      : undefined;
+    const clockSeq =
+      command.clockSeq === undefined
+        ? undefined
+        : ClockSequence.fromNumber(command.clockSeq);
 
     return Promise.resolve(
       this.uuidService.generate(time, clockSeq).asString(),

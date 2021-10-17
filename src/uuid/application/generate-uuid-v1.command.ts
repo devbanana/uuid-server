@@ -33,13 +33,13 @@ export class GenerateUuidV1Command {
   public readonly node: string | undefined;
 
   constructor(options?: CommandOptions) {
-    if (options?.time) {
+    if (options?.time !== undefined) {
       this.time = options.time;
     }
-    if (options?.clockSeq) {
+    if (options?.clockSeq !== undefined) {
       this.clockSeq = options.clockSeq;
     }
-    if (options?.node) {
+    if (options?.node !== undefined) {
       this.node = options.node;
     }
   }

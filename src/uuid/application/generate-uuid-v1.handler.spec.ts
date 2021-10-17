@@ -64,6 +64,16 @@ describe('GenerateUuidV1Handler', () => {
     );
   });
 
+  it('should pass a 0 clock sequence to the UUID service', async () => {
+    const clockSeq = 0;
+    await handler.execute(new GenerateUuidV1Command({ clockSeq }));
+
+    expect(mockService.generate).toHaveBeenCalledWith(
+      undefined,
+      ClockSequence.fromNumber(0),
+    );
+  });
+
   afterEach(() => {
     mockService.generate.mockClear();
   });

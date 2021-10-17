@@ -31,6 +31,15 @@ describe('GenerateUuidV1Command', () => {
     expect(errors).toHaveLength(0);
   });
 
+  it('should not allow time to be an empty string', async () => {
+    const command = new GenerateUuidV1Command({ time: '' });
+    const errors = await validate(command);
+
+    expect(errors).toHaveLength(1);
+    expect(errors[0].property).toBe('time');
+    expect(errors[0].constraints).toHaveProperty('isIso8601');
+  });
+
   it('should require time to not be after 5236-03-31 at 21:21:00.684 UTC', async () => {
     const command = new GenerateUuidV1Command({
       time: '5236-03-31T21:21:00.684Z',
@@ -78,6 +87,14 @@ describe('GenerateUuidV1Command', () => {
     expect(errors[0].constraints).toHaveProperty('isInt');
   });
 
+  it('should allow clockSeq to be 0', async () => {
+    const command = new GenerateUuidV1Command({ clockSeq: 0 });
+    const errors = await validate(command);
+
+    expect(errors).toHaveLength(0);
+    expect(command.clockSeq).toBe(0);
+  });
+
   describe('the node', () => {
     it.each([
       ['should accept colons', '92:5F:CF:BE:F9:98'],
@@ -92,6 +109,15 @@ describe('GenerateUuidV1Command', () => {
 
     it('should not accept non-hexadecimal values', async () => {
       const command = new GenerateUuidV1Command({ node: '35:07:CZ:17:6C:E7' });
+      const errors = await validate(command);
+
+      expect(errors).toHaveLength(1);
+      expect(errors[0].property).toBe('node');
+      expect(errors[0].constraints).toHaveProperty('isMacAddress');
+    });
+
+    it('cannot be an empty string', async () => {
+      const command = new GenerateUuidV1Command({ node: '' });
       const errors = await validate(command);
 
       expect(errors).toHaveLength(1);

@@ -1,13 +1,14 @@
 import {
+  IsInt,
   IsISO8601,
   IsMACAddress,
-  IsNumber,
   IsOptional,
   Max,
   Min,
 } from 'class-validator';
 import MinDateString from './min-date-string.validator';
 import MaxDateString from './max-date-string.validator';
+import { Type } from 'class-transformer';
 
 interface CommandOptions {
   time?: string;
@@ -22,9 +23,10 @@ export class GenerateUuidV1Command {
   @IsISO8601()
   public readonly time: string | undefined;
   @IsOptional()
-  @IsNumber()
   @Min(0)
   @Max(0x3fff)
+  @IsInt()
+  @Type(() => Number)
   public readonly clockSeq: number | undefined;
   @IsOptional()
   @IsMACAddress()

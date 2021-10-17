@@ -4,6 +4,7 @@ import { UuidModule } from '../src/uuid/uuid.module';
 import { INestApplication } from '@nestjs/common';
 import { UuidV1 } from '../src/uuid/domain/uuid-v1';
 import { UuidTime } from '../src/uuid/domain/uuid-time';
+import { ClockSequence } from '../src/uuid/domain/clock-sequence';
 
 interface ErrorResponse {
   statusCode: string;
@@ -37,7 +38,7 @@ describe('uuid', () => {
     await request.get('/uuid/v1/generate').expect(200).expect({ uuid });
 
     expect(uuidService.generate).toHaveBeenCalled();
-    expect(uuidService.generate).toHaveBeenCalledWith(undefined);
+    expect(uuidService.generate).toHaveBeenCalledWith(undefined, undefined);
   });
 
   it('should use the given time for generating the UUID', async () => {
@@ -49,6 +50,7 @@ describe('uuid', () => {
     expect(uuidService.generate).toHaveBeenCalled();
     expect(uuidService.generate).toHaveBeenCalledWith(
       UuidTime.fromString('2021-10-12T00:00:00Z'),
+      undefined,
     );
   });
 
@@ -82,7 +84,58 @@ describe('uuid', () => {
     expect(responseBody.message[0]).toMatch(/time cannot be after/);
   });
 
+  it('should use the given clock sequence for generating the UUID', async () => {
+    await request.get('/uuid/v1/generate?clockSeq=2024').expect(200);
+
+    expect(uuidService.generate).toHaveBeenCalled();
+    expect(uuidService.generate).toHaveBeenCalledWith(
+      undefined,
+      ClockSequence.fromNumber(2024),
+    );
+  });
+
+  it('requires a valid clock sequence', async () => {
+    const response = await request
+      .get('/uuid/v1/generate?clockSeq=foo')
+      .expect(400);
+
+    expect(response.body).toHaveProperty('message');
+
+    const responseBody = response.body as ErrorResponse;
+    expect(responseBody.statusCode).toBe(400);
+    expect(responseBody.message[0]).toMatch(
+      /clockSeq must be an integer number/,
+    );
+  });
+
+  it('cannot have a clock sequence less than 0', async () => {
+    const response = await request
+      .get('/uuid/v1/generate?clockSeq=-10')
+      .expect(400);
+
+    expect(response.body).toHaveProperty('message');
+
+    const responseBody = response.body as ErrorResponse;
+    expect(responseBody.statusCode).toBe(400);
+    expect(responseBody.message[0]).toMatch(/clockSeq must not be less than 0/);
+  });
+
+  it('cannot have a clock sequence greater than 0x3FFF', async () => {
+    const response = await request
+      .get('/uuid/v1/generate?clockSeq=16384')
+      .expect(400);
+
+    expect(response.body).toHaveProperty('message');
+
+    const responseBody = response.body as ErrorResponse;
+    expect(responseBody.statusCode).toBe(400);
+    expect(responseBody.message[0]).toMatch(
+      /clockSeq must not be greater than 16383/,
+    );
+  });
+
   afterEach(async () => {
     await app.close();
+    uuidService.generate.mockClear();
   });
 });

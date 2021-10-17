@@ -69,6 +69,15 @@ describe('GenerateUuidV1Command', () => {
     expect(errors[0].constraints).toHaveProperty('max');
   });
 
+  it('should not allow a decimal to be passed for clockSeq', async () => {
+    const command = new GenerateUuidV1Command({ clockSeq: 3.8 });
+    const errors = await validate(command);
+
+    expect(errors).toHaveLength(1);
+    expect(errors[0].property).toBe('clockSeq');
+    expect(errors[0].constraints).toHaveProperty('isInt');
+  });
+
   describe('the node', () => {
     it.each([
       ['should accept colons', '92:5F:CF:BE:F9:98'],

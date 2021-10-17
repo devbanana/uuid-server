@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UuidService } from './uuid.service';
 import { validate, version } from 'uuid';
 import { UuidTime } from '../domain/uuid-time';
+import { ClockSequence } from '../domain/clock-sequence';
 
 describe('UuidService', () => {
   let provider: UuidService;
@@ -30,5 +31,15 @@ describe('UuidService', () => {
     const uuid = provider.generate(UuidTime.fromString(time));
 
     expect(uuid.getTime()).toStrictEqual(UuidTime.fromString(time));
+  });
+
+  it('should use the given clock sequence', () => {
+    const clockSeq = 0x2eda;
+    const uuid = provider.generate(
+      undefined,
+      ClockSequence.fromNumber(clockSeq),
+    );
+
+    expect(uuid.getClockSequence().asNumber()).toBe(clockSeq);
   });
 });

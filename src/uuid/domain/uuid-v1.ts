@@ -1,5 +1,6 @@
 import { validate, version } from 'uuid';
 import { gregorianStart, UuidTime } from './uuid-time';
+import { ClockSequence } from './clock-sequence';
 
 export class UuidV1 {
   private constructor(private readonly uuid: string) {}
@@ -23,10 +24,17 @@ export class UuidV1 {
     const high = parseInt(this.uuid.substr(14, 4), 16) & 0xfff;
     const mid = parseInt(this.uuid.substr(9, 4), 16);
     const low = parseInt(this.uuid.substr(0, 8), 16);
+
     let uuidTime = high * 0x1000000000000 + mid * 0x100000000 + low;
     uuidTime /= 10000;
     uuidTime += gregorianStart;
 
     return UuidTime.fromMilliseconds(uuidTime);
+  }
+
+  getClockSequence(): ClockSequence {
+    const bytes = parseInt(this.uuid.substr(19, 4), 16);
+
+    return ClockSequence.fromNumber(bytes & 0x3fff);
   }
 }

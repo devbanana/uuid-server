@@ -3,6 +3,7 @@ import { GenerateUuidV1Command } from './generate-uuid-v1.command';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UuidV1 } from '../domain/uuid-v1';
 import { UuidTime } from '../domain/uuid-time';
+import { ClockSequence } from '../domain/clock-sequence';
 
 describe('GenerateUuidV1Handler', () => {
   const uuid = 'd57854d0-2aab-11ec-8da1-817a6c23fd17';
@@ -34,7 +35,7 @@ describe('GenerateUuidV1Handler', () => {
 
     expect(uuidResult).toBe(uuid);
     expect(mockService.generate).toHaveBeenCalled();
-    expect(mockService.generate).toHaveBeenCalledWith(undefined);
+    expect(mockService.generate).toHaveBeenCalledWith(undefined, undefined);
   });
 
   it('should pass the time to the UUID service', async () => {
@@ -46,6 +47,20 @@ describe('GenerateUuidV1Handler', () => {
     expect(uuidResult).toBe(uuid);
     expect(mockService.generate).toHaveBeenCalledWith(
       UuidTime.fromString(time),
+      undefined,
+    );
+  });
+
+  it('should pass the clock sequence to the UUID service', async () => {
+    const clockSeq = 0x38f4;
+    const uuidResult = await handler.execute(
+      new GenerateUuidV1Command({ clockSeq }),
+    );
+
+    expect(uuidResult).toBe(uuid);
+    expect(mockService.generate).toHaveBeenCalledWith(
+      undefined,
+      ClockSequence.fromNumber(clockSeq),
     );
   });
 

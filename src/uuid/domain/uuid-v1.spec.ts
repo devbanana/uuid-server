@@ -40,4 +40,8 @@ describe('UuidV1', () => {
       UuidTime.fromString('2021-10-11T17:15:18.426Z'),
     );
   });
+
+  it("should extract the UUID's clock sequence", () => {
+    expect(uuidV1.getClockSequence().asNumber()).toBe(0x3ce4);
+  });
 });

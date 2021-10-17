@@ -5,6 +5,11 @@ import { INestApplication } from '@nestjs/common';
 import { UuidV1 } from '../src/uuid/domain/uuid-v1';
 import { UuidTime } from '../src/uuid/domain/uuid-time';
 
+interface ErrorResponse {
+  statusCode: string;
+  message: string[];
+}
+
 describe('uuid', () => {
   let app: INestApplication;
   let request: supertest.SuperTest<supertest.Test>;
@@ -52,25 +57,29 @@ describe('uuid', () => {
   });
 
   it('cannot have a time before 1582-10-15 at midnight UTC', async () => {
-    await request
+    const response = await request
       .get('/uuid/v1/generate?time=1582-10-14T23:59:59Z')
-      .expect(400)
-      .expect({
-        statusCode: 400,
-        message: ['time cannot be before 1582-10-15T00:00:00Z'],
-        error: 'Bad Request',
-      });
+      .expect(400);
+
+    expect(response.body).toHaveProperty('message');
+
+    const responseBody = response.body as ErrorResponse;
+    expect(responseBody.statusCode).toBe(400);
+    expect(responseBody.message).toHaveLength(1);
+    expect(responseBody.message[0]).toMatch(/time cannot be before/);
   });
 
   it('cannot have a time after 5236-03-31 at 21:21:00.683 UTC', async () => {
-    await request
+    const response = await request
       .get('/uuid/v1/generate?time=5236-03-31T21:21:00.684Z')
-      .expect(400)
-      .expect({
-        statusCode: 400,
-        message: ['time cannot be after 5236-03-31T21:21:00.683Z'],
-        error: 'Bad Request',
-      });
+      .expect(400);
+
+    expect(response.body).toHaveProperty('message');
+
+    const responseBody = response.body as ErrorResponse;
+    expect(responseBody.statusCode).toBe(400);
+    expect(responseBody.message).toHaveLength(1);
+    expect(responseBody.message[0]).toMatch(/time cannot be after/);
   });
 
   afterEach(async () => {

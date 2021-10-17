@@ -29,6 +29,6 @@ describe('UuidService', () => {
     const time = '2021-10-11 05:43:27';
     const uuid = provider.generate(UuidTime.fromString(time));
 
-    expect(uuid.getTime()).toStrictEqual(new Date(time));
+    expect(uuid.getTime()).toStrictEqual(UuidTime.fromString(time));
   });
 });

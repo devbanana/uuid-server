@@ -1,5 +1,5 @@
 import { validate, version } from 'uuid';
-import { gregorianStart } from './uuid-time';
+import { gregorianStart, UuidTime } from './uuid-time';
 
 export class UuidV1 {
   private constructor(private readonly uuid: string) {}
@@ -19,7 +19,7 @@ export class UuidV1 {
     return this.uuid;
   }
 
-  getTime(): Date {
+  getTime(): UuidTime {
     const high = parseInt(this.uuid.substr(14, 4), 16) & 0xfff;
     const mid = parseInt(this.uuid.substr(9, 4), 16);
     const low = parseInt(this.uuid.substr(0, 8), 16);
@@ -27,6 +27,6 @@ export class UuidV1 {
     uuidTime /= 10000;
     uuidTime += gregorianStart;
 
-    return new Date(uuidTime);
+    return UuidTime.fromMilliseconds(uuidTime);
   }
 }

@@ -1,4 +1,5 @@
 import { UuidV1 } from './uuid-v1';
+import { UuidTime } from './uuid-time';
 
 describe('UuidV1', () => {
   const uuid = 'ced717a0-2ab6-11ec-bce4-bf507cc82961';
@@ -36,7 +37,7 @@ describe('UuidV1', () => {
 
   it("should extract the UUID's time", () => {
     expect(uuidV1.getTime()).toStrictEqual(
-      new Date('2021-10-11T17:15:18.426Z'),
+      UuidTime.fromString('2021-10-11T17:15:18.426Z'),
     );
   });
 });

@@ -1,5 +1,6 @@
 import { GenerateUuidV1Command } from './generate-uuid-v1.command';
 import { validate } from 'class-validator';
+import { plainToClass } from 'class-transformer';
 
 describe('GenerateUuidV1Command', () => {
   it('should be defined', () => {
@@ -85,6 +86,14 @@ describe('GenerateUuidV1Command', () => {
     expect(errors).toHaveLength(1);
     expect(errors[0].property).toBe('clockSeq');
     expect(errors[0].constraints).toHaveProperty('isInt');
+  });
+
+  it('should allow a numeric string to be passed for clockSeq', async () => {
+    const command = plainToClass(GenerateUuidV1Command, { clockSeq: '16230' });
+    const errors = await validate(command);
+
+    expect(errors).toHaveLength(0);
+    expect(command.clockSeq).toBe(16_230);
   });
 
   it('should allow clockSeq to be 0', async () => {

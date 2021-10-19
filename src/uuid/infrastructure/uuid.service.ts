@@ -4,10 +4,11 @@ import { UuidServiceInterface } from '../domain/uuid-service.interface';
 import { UuidV1 } from '../domain/uuid-v1';
 import { UuidTime } from '../domain/uuid-time';
 import { ClockSequence } from '../domain/clock-sequence';
+import { Node } from '../domain/node';
 
 @Injectable()
 export class UuidService implements UuidServiceInterface {
-  generate(time?: UuidTime, clockSeq?: ClockSequence): UuidV1 {
+  generate(time?: UuidTime, clockSeq?: ClockSequence, node?: Node): UuidV1 {
     const options: V1Options = {};
 
     if (time !== undefined) {
@@ -15,6 +16,9 @@ export class UuidService implements UuidServiceInterface {
     }
     if (clockSeq !== undefined) {
       options.clockseq = clockSeq.asNumber();
+    }
+    if (node !== undefined) {
+      options.node = node.asByteArray();
     }
 
     return UuidV1.fromUuid(v1(options));

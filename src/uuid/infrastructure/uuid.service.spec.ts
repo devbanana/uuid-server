@@ -3,6 +3,7 @@ import { UuidService } from './uuid.service';
 import { validate, version } from 'uuid';
 import { UuidTime } from '../domain/uuid-time';
 import { ClockSequence } from '../domain/clock-sequence';
+import { Node } from '../domain/node';
 
 describe('UuidService', () => {
   let provider: UuidService;
@@ -41,5 +42,15 @@ describe('UuidService', () => {
     );
 
     expect(uuid.clockSequence.asNumber()).toBe(clockSeq);
+  });
+
+  it('should use the given node', () => {
+    const uuid = provider.generate(
+      undefined,
+      undefined,
+      Node.fromString('FE:3E:9A:8B:06:CD'),
+    );
+
+    expect(uuid.node).toStrictEqual(Node.fromString('FE:3E:9A:8B:06:CD'));
   });
 });

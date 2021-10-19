@@ -5,6 +5,7 @@ import { INestApplication } from '@nestjs/common';
 import { UuidV1 } from '../src/uuid/domain/uuid-v1';
 import { UuidTime } from '../src/uuid/domain/uuid-time';
 import { ClockSequence } from '../src/uuid/domain/clock-sequence';
+import { Node } from '../src/uuid/domain/node';
 
 interface ErrorResponse {
   statusCode: string;
@@ -38,7 +39,11 @@ describe('uuid', () => {
     await request.get('/uuid/v1/generate').expect(200).expect({ uuid });
 
     expect(uuidService.generate).toHaveBeenCalled();
-    expect(uuidService.generate).toHaveBeenCalledWith(undefined, undefined);
+    expect(uuidService.generate).toHaveBeenCalledWith(
+      undefined,
+      undefined,
+      undefined,
+    );
   });
 
   it('should use the given time for generating the UUID', async () => {
@@ -50,6 +55,7 @@ describe('uuid', () => {
     expect(uuidService.generate).toHaveBeenCalled();
     expect(uuidService.generate).toHaveBeenCalledWith(
       UuidTime.fromString('2021-10-12T00:00:00Z'),
+      undefined,
       undefined,
     );
   });
@@ -91,6 +97,7 @@ describe('uuid', () => {
     expect(uuidService.generate).toHaveBeenCalledWith(
       undefined,
       ClockSequence.fromNumber(2024),
+      undefined,
     );
   });
 
@@ -140,7 +147,31 @@ describe('uuid', () => {
     expect(uuidService.generate).toHaveBeenCalledWith(
       undefined,
       ClockSequence.fromNumber(0),
+      undefined,
     );
+  });
+
+  it('should use the given MAC address for generating the UUID', async () => {
+    const node = 'DE:37:C3:74:65:A0';
+    await request.get(`/uuid/v1/generate?node=${node}`).expect(200);
+
+    expect(uuidService.generate).toHaveBeenCalledWith(
+      undefined,
+      undefined,
+      Node.fromString(node),
+    );
+  });
+
+  it('should not accept an invalid MAC address', async () => {
+    const response = await request
+      .get('/uuid/v1/generate?node=foo')
+      .expect(400);
+
+    expect(response.body).toHaveProperty('message');
+
+    const responseBody = response.body as ErrorResponse;
+    expect(responseBody.statusCode).toBe(400);
+    expect(responseBody.message[0]).toBe('node must be a MAC Address');
   });
 
   afterEach(async () => {

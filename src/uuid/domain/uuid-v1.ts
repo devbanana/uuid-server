@@ -1,6 +1,7 @@
 import { validate, version } from 'uuid';
 import { gregorianStart, UuidTime } from './uuid-time';
 import { ClockSequence } from './clock-sequence';
+import { Node } from './node';
 
 export class UuidV1 {
   private constructor(private readonly uuid: string) {}
@@ -36,5 +37,9 @@ export class UuidV1 {
     const bytes = parseInt(this.uuid.substr(19, 4), 16);
 
     return ClockSequence.fromNumber(bytes & 0x3fff);
+  }
+
+  get node(): Node {
+    return Node.fromHexString(this.uuid.slice(-12));
   }
 }

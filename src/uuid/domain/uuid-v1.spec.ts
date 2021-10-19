@@ -1,5 +1,6 @@
 import { UuidV1 } from './uuid-v1';
 import { UuidTime } from './uuid-time';
+import { Node } from './node';
 
 describe('UuidV1', () => {
   const uuid = 'ced717a0-2ab6-11ec-bce4-bf507cc82961';
@@ -43,5 +44,9 @@ describe('UuidV1', () => {
 
   it("should extract the UUID's clock sequence", () => {
     expect(uuidV1.clockSequence.asNumber()).toBe(0x3ce4);
+  });
+
+  it("should extract the UUID's node", () => {
+    expect(uuidV1.node).toStrictEqual(Node.fromString('bf:50:7c:c8:29:61'));
   });
 });

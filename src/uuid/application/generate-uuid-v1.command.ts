@@ -14,6 +14,7 @@ import { Type } from 'class-transformer';
 export enum UuidFormats {
   Rfc4122 = 'rfc4122',
   Base32 = 'base32',
+  Number = 'number',
 }
 
 interface CommandOptions {

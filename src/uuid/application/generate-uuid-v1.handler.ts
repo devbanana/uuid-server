@@ -33,6 +33,9 @@ export class GenerateUuidV1Handler
       case UuidFormats.Base32:
         return Promise.resolve(uuid.asBase32());
 
+      case UuidFormats.Number:
+        return Promise.resolve(uuid.asNumber().toString());
+
       default:
         return Promise.resolve(uuid.asRfc4122());
     }

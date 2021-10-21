@@ -11,18 +11,28 @@ interface ErrorResponse {
   message: string[];
 }
 
+interface UuidMock {
+  asRfc4122: jest.Mock<string>;
+  asBase32: jest.Mock<string>;
+  asNumber: jest.Mock<string>;
+}
+
+const uuid = 'aa768af0-2adc-11ec-be43-cfd05c05f21f';
+// noinspection SpellCheckingInspection
+const base32Uuid = '5AET5F0APW27PBWGYFT1E0BWGZ';
+const numberUuid = '226584268313291534147956877654481039903';
+
 describe('uuid', () => {
   let app: INestApplication;
   let request: supertest.SuperTest<supertest.Test>;
-
-  const uuid = 'aa768af0-2adc-11ec-be43-cfd05c05f21f';
-  let mockUuidV1: { asRfc4122: jest.Mock<string>; asBase32: jest.Mock<string> };
+  let mockUuidV1: UuidMock;
   let uuidService: { generate: jest.Mock };
 
   beforeAll(() => {
     mockUuidV1 = {
       asRfc4122: jest.fn(() => uuid),
-      asBase32: jest.fn(() => 'foo'),
+      asBase32: jest.fn(() => base32Uuid),
+      asNumber: jest.fn(() => numberUuid),
     };
 
     uuidService = {
@@ -190,10 +200,22 @@ describe('uuid', () => {
   });
 
   it('should format the UUID as base 32', async () => {
-    await request.get('/uuid/v1/generate?format=base32').expect(200);
+    await request.get('/uuid/v1/generate?format=base32').expect(200).expect({
+      uuid: base32Uuid,
+    });
 
     expect(mockUuidV1.asRfc4122).toHaveBeenCalledTimes(0);
     expect(mockUuidV1.asBase32).toHaveBeenCalledTimes(1);
+  });
+
+  it('should format the UUID as a number', async () => {
+    await request.get('/uuid/v1/generate?format=number').expect(200).expect({
+      uuid: numberUuid,
+    });
+
+    expect(mockUuidV1.asRfc4122).toHaveBeenCalledTimes(0);
+    expect(mockUuidV1.asBase32).toHaveBeenCalledTimes(0);
+    expect(mockUuidV1.asNumber).toHaveBeenCalledTimes(1);
   });
 
   it('should throw an error if an invalid format is given', async () => {

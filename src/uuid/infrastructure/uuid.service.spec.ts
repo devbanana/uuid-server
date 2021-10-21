@@ -21,7 +21,7 @@ describe('UuidService', () => {
   });
 
   it('should generate a V1 UUID', () => {
-    const uuid = provider.generate().asString();
+    const uuid = provider.generate().toString();
 
     expect(validate(uuid)).toBeTruthy();
     expect(version(uuid)).toBe(1);

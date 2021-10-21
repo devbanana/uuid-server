@@ -15,7 +15,7 @@ describe('UuidV1', () => {
   });
 
   it('should get the UUID as a string', () => {
-    expect(uuidV1.asString()).toBe(uuid);
+    expect(uuidV1.toString()).toBe(uuid);
   });
 
   it('should require a validly formatted UUID', () => {
@@ -48,5 +48,17 @@ describe('UuidV1', () => {
 
   it("should extract the UUID's node", () => {
     expect(uuidV1.node).toStrictEqual(Node.fromString('bf:50:7c:c8:29:61'));
+  });
+
+  it('should return the RFC4122-formatted UUID', () => {
+    expect(uuidV1.asRfc4122()).toBe(uuid);
+  });
+
+  it('should return the base32-formatted UUID', () => {
+    expect(uuidV1.asBase32()).toBe('6ETWBT0ANP27PBSS5ZA1YCGAB1');
+  });
+
+  it('should return the UUID as a number', () => {
+    expect(uuidV1.asNumber()).toBe(274937790141423023587971456784237341025n);
   });
 });

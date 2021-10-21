@@ -5,6 +5,7 @@ import { UuidV1 } from '../domain/uuid-v1';
 import { UuidTime } from '../domain/uuid-time';
 import { ClockSequence } from '../domain/clock-sequence';
 import { Node } from '../domain/node';
+import { plainToClass } from 'class-transformer';
 
 describe('GenerateUuidV1Handler', () => {
   const uuid = 'd57854d0-2aab-11ec-8da1-817a6c23fd17';
@@ -92,6 +93,30 @@ describe('GenerateUuidV1Handler', () => {
       Node.fromString(node),
     );
   });
+
+  it.each`
+    format       | result
+    ${'rfc4122'} | ${uuid}
+    ${'base32'}  | ${'6NF1AD0ANB27P8V8C1F9P27Z8Q'}
+  `(
+    'should format the UUID as $format',
+    async ({ format, result }: { format: string; result: string }) => {
+      const uuidV1 = UuidV1.fromUuid(uuid);
+      const spy = jest.spyOn(
+        uuidV1,
+        format === 'rfc4122' ? 'asRfc4122' : 'asBase32',
+      );
+
+      mockService.generate.mockImplementationOnce(() => uuidV1);
+
+      const response = await handler.execute(
+        plainToClass(GenerateUuidV1Command, { format }),
+      );
+
+      expect(spy).toHaveBeenCalled();
+      expect(response).toBe(result);
+    },
+  );
 
   afterEach(() => {
     mockService.generate.mockClear();

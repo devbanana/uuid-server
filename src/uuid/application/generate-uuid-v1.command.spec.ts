@@ -1,4 +1,4 @@
-import { GenerateUuidV1Command } from './generate-uuid-v1.command';
+import { GenerateUuidV1Command, UuidFormats } from './generate-uuid-v1.command';
 import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 
@@ -132,6 +132,36 @@ describe('GenerateUuidV1Command', () => {
       expect(errors).toHaveLength(1);
       expect(errors[0].property).toBe('node');
       expect(errors[0].constraints).toHaveProperty('isMacAddress');
+    });
+  });
+
+  describe('the format', () => {
+    it.each`
+      format
+      ${'rfc4122'}
+      ${'base32'}
+    `('can be $format', async ({ format }: { format: string }) => {
+      const command = plainToClass(GenerateUuidV1Command, { format });
+      const errors = await validate(command);
+
+      expect(errors).toHaveLength(0);
+    });
+
+    it('cannot be an invalid format', async () => {
+      const command = plainToClass(GenerateUuidV1Command, { format: 'foo' });
+      const errors = await validate(command);
+
+      expect(errors).toHaveLength(1);
+      expect(errors[0].property).toBe('format');
+      expect(errors[0].constraints).toHaveProperty('isEnum');
+    });
+
+    it('is set in the constructor', () => {
+      const command = new GenerateUuidV1Command({
+        format: UuidFormats.Rfc4122,
+      });
+
+      expect(command.format).toBe(UuidFormats.Rfc4122);
     });
   });
 });

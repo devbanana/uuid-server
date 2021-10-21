@@ -2,6 +2,7 @@ import { validate, version } from 'uuid';
 import { gregorianStart, UuidTime } from './uuid-time';
 import { ClockSequence } from './clock-sequence';
 import { Node } from './node';
+import { Base32Encoder } from './base32-encoder';
 
 export class UuidV1 {
   private constructor(private readonly uuid: string) {}
@@ -17,8 +18,20 @@ export class UuidV1 {
     return new UuidV1(uuid);
   }
 
-  asString(): string {
+  toString(): string {
     return this.uuid;
+  }
+
+  asRfc4122(): string {
+    return this.toString();
+  }
+
+  asBase32(): string {
+    return Base32Encoder.encode(this.asNumber());
+  }
+
+  asNumber(): BigInt {
+    return BigInt(`0x${this.uuid.replace(/-/g, '')}`);
   }
 
   get time(): UuidTime {

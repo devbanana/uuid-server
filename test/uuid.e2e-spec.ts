@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as supertest from 'supertest';
 import { UuidModule } from '../src/uuid/uuid.module';
 import { INestApplication } from '@nestjs/common';
-import { UuidV1 } from '../src/uuid/domain/uuid-v1';
 import { UuidTime } from '../src/uuid/domain/uuid-time';
 import { ClockSequence } from '../src/uuid/domain/clock-sequence';
 import { Node } from '../src/uuid/domain/node';
@@ -17,9 +16,19 @@ describe('uuid', () => {
   let request: supertest.SuperTest<supertest.Test>;
 
   const uuid = 'aa768af0-2adc-11ec-be43-cfd05c05f21f';
-  const uuidService = {
-    generate: jest.fn(() => UuidV1.fromUuid(uuid)),
-  };
+  let mockUuidV1: { asRfc4122: jest.Mock<string>; asBase32: jest.Mock<string> };
+  let uuidService: { generate: jest.Mock };
+
+  beforeAll(() => {
+    mockUuidV1 = {
+      asRfc4122: jest.fn(() => uuid),
+      asBase32: jest.fn(() => 'foo'),
+    };
+
+    uuidService = {
+      generate: jest.fn(() => mockUuidV1),
+    };
+  });
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -174,8 +183,33 @@ describe('uuid', () => {
     expect(responseBody.message[0]).toBe('node must be a MAC Address');
   });
 
+  it('should format the UUID as RFC 4122', async () => {
+    await request.get('/uuid/v1/generate?format=rfc4122').expect(200);
+
+    expect(mockUuidV1.asRfc4122).toHaveBeenCalledTimes(1);
+  });
+
+  it('should format the UUID as base 32', async () => {
+    await request.get('/uuid/v1/generate?format=base32').expect(200);
+
+    expect(mockUuidV1.asRfc4122).toHaveBeenCalledTimes(0);
+    expect(mockUuidV1.asBase32).toHaveBeenCalledTimes(1);
+  });
+
+  it('should throw an error if an invalid format is given', async () => {
+    const response = await request
+      .get('/uuid/v1/generate?format=foo')
+      .expect(400);
+
+    expect(response.body).toHaveProperty('message');
+
+    const responseBody = response.body as ErrorResponse;
+    expect(responseBody.statusCode).toBe(400);
+    expect(responseBody.message[0]).toBe('An invalid format was provided');
+  });
+
   afterEach(async () => {
     await app.close();
-    uuidService.generate.mockClear();
+    jest.clearAllMocks();
   });
 });

@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer';
+
 // noinspection SpellCheckingInspection
 const characters = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
 
@@ -7,8 +9,11 @@ const characters = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
  * Spec: https://www.crockford.com/base32.html
  */
 export class Base32Encoder {
-  static encode(input: BigInt): string {
-    let bits: string = input.toString(2);
+  static encode(input: Buffer): string {
+    let bits = '';
+    input.forEach(
+      (byte: number) => (bits += byte.toString(2).padStart(8, '0')),
+    );
 
     // Pad to multiple of 5 bits
     bits = bits.padStart(Math.ceil(bits.length / 5) * 5, '0');

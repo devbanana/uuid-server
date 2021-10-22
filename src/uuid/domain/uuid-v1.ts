@@ -38,7 +38,7 @@ export class UuidV1 {
   }
 
   asBase32(): string {
-    return Base32Encoder.encode(this.asNumber());
+    return Base32Encoder.encode(this.uuid);
   }
 
   asNumber(): BigInt {

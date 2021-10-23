@@ -140,8 +140,9 @@ describe('GenerateUuidV1Command', () => {
       format
       ${'rfc4122'}
       ${'base32'}
+      ${'binary'}
       ${'number'}
-    `('can be $format', async ({ format }: { format: string }) => {
+    `('can be $format', async ({ format }: { format: UuidFormats }) => {
       const command = plainToClass(GenerateUuidV1Command, { format });
       const errors = await validate(command);
 

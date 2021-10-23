@@ -45,6 +45,10 @@ export class UuidV1 {
     return (this.uuid.readBigUInt64BE(0) << 64n) | this.uuid.readBigUInt64BE(8);
   }
 
+  asBinary(): string {
+    return this.uuid.toString('binary');
+  }
+
   get time(): UuidTime {
     const high = BigInt(this.uuid.readUInt16BE(6) & 0xfff);
     const mid = BigInt(this.uuid.readUInt16BE(4));

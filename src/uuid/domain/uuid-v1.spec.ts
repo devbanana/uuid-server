@@ -61,4 +61,10 @@ describe('UuidV1', () => {
   it('should return the UUID as a number', () => {
     expect(uuidV1.asNumber()).toBe(274937790141423023587971456784237341025n);
   });
+
+  it('should return the UUID as a binary string', () => {
+    expect(
+      UuidV1.fromUuid('9fd0de30-3387-11ec-9afe-7167f3fdedff').asBinary(),
+    ).toBe('\x9f\xd0\xde\x30\x33\x87\x11\xec\x9a\xfe\x71\x67\xf3\xfd\xed\xff');
+  });
 });

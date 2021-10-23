@@ -14,12 +14,15 @@ interface ErrorResponse {
 interface UuidMock {
   asRfc4122: jest.Mock<string>;
   asBase32: jest.Mock<string>;
+  asBinary: jest.Mock<string>;
   asNumber: jest.Mock<string>;
 }
 
 const uuid = 'aa768af0-2adc-11ec-be43-cfd05c05f21f';
 // noinspection SpellCheckingInspection
 const base32Uuid = '5AET5F0APW27PBWGYFT1E0BWGZ';
+const binaryUuid =
+  '\xaa\x76\x8a\xf0\x2a\xdc\x11\xec\xbe\x43\xcf\xd0\x5c\x05\xf2\x1f';
 const numberUuid = '226584268313291534147956877654481039903';
 
 describe('uuid', () => {
@@ -32,6 +35,7 @@ describe('uuid', () => {
     mockUuidV1 = {
       asRfc4122: jest.fn(() => uuid),
       asBase32: jest.fn(() => base32Uuid),
+      asBinary: jest.fn(() => binaryUuid),
       asNumber: jest.fn(() => numberUuid),
     };
 
@@ -197,6 +201,9 @@ describe('uuid', () => {
     await request.get('/uuid/v1/generate?format=rfc4122').expect(200);
 
     expect(mockUuidV1.asRfc4122).toHaveBeenCalledTimes(1);
+    expect(mockUuidV1.asBase32).toHaveBeenCalledTimes(0);
+    expect(mockUuidV1.asBinary).toHaveBeenCalledTimes(0);
+    expect(mockUuidV1.asNumber).toHaveBeenCalledTimes(0);
   });
 
   it('should format the UUID as base 32', async () => {
@@ -206,6 +213,19 @@ describe('uuid', () => {
 
     expect(mockUuidV1.asRfc4122).toHaveBeenCalledTimes(0);
     expect(mockUuidV1.asBase32).toHaveBeenCalledTimes(1);
+    expect(mockUuidV1.asBinary).toHaveBeenCalledTimes(0);
+    expect(mockUuidV1.asNumber).toHaveBeenCalledTimes(0);
+  });
+
+  it('should format the UUID as binary', async () => {
+    await request.get('/uuid/v1/generate?format=binary').expect(200).expect({
+      uuid: binaryUuid,
+    });
+
+    expect(mockUuidV1.asRfc4122).toHaveBeenCalledTimes(0);
+    expect(mockUuidV1.asBase32).toHaveBeenCalledTimes(0);
+    expect(mockUuidV1.asBinary).toHaveBeenCalledTimes(1);
+    expect(mockUuidV1.asNumber).toHaveBeenCalledTimes(0);
   });
 
   it('should format the UUID as a number', async () => {
@@ -215,6 +235,7 @@ describe('uuid', () => {
 
     expect(mockUuidV1.asRfc4122).toHaveBeenCalledTimes(0);
     expect(mockUuidV1.asBase32).toHaveBeenCalledTimes(0);
+    expect(mockUuidV1.asBinary).toHaveBeenCalledTimes(0);
     expect(mockUuidV1.asNumber).toHaveBeenCalledTimes(1);
   });
 

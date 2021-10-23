@@ -5,6 +5,7 @@ import { UuidServiceInterface } from '../domain/uuid-service.interface';
 import { UuidTime } from '../domain/uuid-time';
 import { ClockSequence } from '../domain/clock-sequence';
 import { Node } from '../domain/node';
+import { UuidV1 } from '../domain/uuid-v1';
 
 @CommandHandler(GenerateUuidV1Command)
 export class GenerateUuidV1Handler
@@ -29,15 +30,25 @@ export class GenerateUuidV1Handler
 
     const uuid = this.uuidService.generate(time, clockSeq, node);
 
+    return Promise.resolve(GenerateUuidV1Handler.getFormat(command, uuid));
+  }
+
+  private static getFormat(
+    command: GenerateUuidV1Command,
+    uuid: UuidV1,
+  ): string {
     switch (command.format) {
       case UuidFormats.Base32:
-        return Promise.resolve(uuid.asBase32());
+        return uuid.asBase32();
 
       case UuidFormats.Number:
-        return Promise.resolve(uuid.asNumber().toString());
+        return uuid.asNumber().toString();
+
+      case UuidFormats.Binary:
+        return uuid.asBinary();
 
       default:
-        return Promise.resolve(uuid.asRfc4122());
+        return uuid.asRfc4122();
     }
   }
 }

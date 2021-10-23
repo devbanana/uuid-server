@@ -99,6 +99,7 @@ describe('GenerateUuidV1Handler', () => {
     format       | result
     ${'rfc4122'} | ${uuid}
     ${'base32'}  | ${'6NF1AD0ANB27P8V8C1F9P27Z8Q'}
+    ${'binary'}  | ${'\xd5\x78\x54\xd0\x2a\xab\x11\xec\x8d\xa1\x81\x7a\x6c\x23\xfd\x17'}
     ${'number'}  | ${'283750358940280951322750379673606421783'}
   `(
     'should format the UUID as $format',
@@ -127,5 +128,7 @@ function getFormatMethod(format: UuidFormats): FormatFunction {
     ? 'asRfc4122'
     : format === UuidFormats.Base32
     ? 'asBase32'
+    : format === UuidFormats.Binary
+    ? 'asBinary'
     : 'asNumber';
 }

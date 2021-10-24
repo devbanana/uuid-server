@@ -9,24 +9,40 @@ const characters = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
  * Spec: https://www.crockford.com/base32.html
  */
 export class Base32Encoder {
-  static encode(input: Buffer): string {
-    let bits = '';
-    input.forEach(
-      (byte: number) => (bits += byte.toString(2).padStart(8, '0')),
-    );
-
-    // Pad to multiple of 5 bits
-    bits = bits.padStart(Math.ceil(bits.length / 5) * 5, '0');
-
-    const segments = bits.match(/.{5}/g);
-
-    // istanbul ignore next: This should never happen
-    if (segments === null) {
-      throw new Error('Invalidly formatted input');
+  static encode(input: Buffer | number): string {
+    let pad = true;
+    if (typeof input === 'number') {
+      input = this.createBuffer(input);
+      pad = false;
     }
 
-    return segments
-      .map(segment => characters.charAt(parseInt(segment, 2)))
+    const output = [];
+    // Work from the end of the buffer
+    input.reverse();
+
+    let bitsRead = 0;
+    let buffer = 0;
+    for (const byte of input) {
+      // Add current byte to start of buffer
+      buffer |= byte << bitsRead;
+      bitsRead += 8;
+      while (bitsRead >= 5) {
+        output.unshift(buffer & 0x1f);
+        buffer >>>= 5;
+        bitsRead -= 5;
+      }
+    }
+
+    if (bitsRead > 0) {
+      output.unshift(buffer & 0x1f);
+    }
+
+    let dataStart = false;
+    return output
+      .filter(byte =>
+        !pad && !dataStart && byte === 0 ? false : (dataStart = true),
+      )
+      .map(byte => characters.charAt(byte))
       .join('');
   }
 
@@ -70,5 +86,16 @@ export class Base32Encoder {
         .join(''),
       'hex',
     );
+  }
+
+  private static createBuffer(input: number): Buffer {
+    const bytes = [];
+
+    while (input > 0) {
+      bytes.unshift(input & 0xff);
+      input >>>= 8;
+    }
+
+    return Buffer.from(bytes);
   }
 }

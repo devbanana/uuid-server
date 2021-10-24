@@ -23,6 +23,18 @@ describe('Base32Encoder', () => {
     it('does not strip off leading zeros', () => {
       expect(Base32Encoder.encode(Buffer.from([0, 0, 0xa9]))).toBe('00059');
     });
+
+    it('can convert a number', () => {
+      expect(Base32Encoder.encode(388_864)).toBe('BVR0');
+    });
+
+    it('can encode a UUID into base 32', () => {
+      expect(
+        Base32Encoder.encode(
+          Buffer.from('017cb3b93bcb40b6147d7813c5ad2339', 'hex'),
+        ),
+      ).toBe('01FJSVJEYB82V18ZBR2F2TT8SS');
+    });
   });
 
   describe('when decoding', () => {

@@ -58,6 +58,10 @@ describe('UuidV1', () => {
     expect(uuidV1.asBase32()).toBe('6ETWBT0ANP27PBSS5ZA1YCGAB1');
   });
 
+  it('should return the base58-formatted UUID', () => {
+    expect(uuidV1.asBase58()).toBe('SYQe9KwSqj9TViUYgNsp16');
+  });
+
   it('should return the UUID as a number', () => {
     expect(uuidV1.asNumber()).toBe(274937790141423023587971456784237341025n);
   });

@@ -140,6 +140,7 @@ describe('GenerateUuidV1Command', () => {
       format
       ${'rfc4122'}
       ${'base32'}
+      ${'base58'}
       ${'binary'}
       ${'number'}
     `('can be $format', async ({ format }: { format: UuidFormats }) => {

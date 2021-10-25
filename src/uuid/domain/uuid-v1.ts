@@ -4,6 +4,7 @@ import { ClockSequence } from './clock-sequence';
 import { Node } from './node';
 import { Buffer } from 'buffer';
 import { CrockfordBase32 } from 'crockford-base32';
+import * as base58 from 'bs58';
 
 export class UuidV1 {
   private constructor(private readonly uuid: Buffer) {}
@@ -39,6 +40,10 @@ export class UuidV1 {
 
   asBase32(): string {
     return CrockfordBase32.encode(this.uuid);
+  }
+
+  asBase58(): string {
+    return base58.encode(this.uuid);
   }
 
   asNumber(): BigInt {

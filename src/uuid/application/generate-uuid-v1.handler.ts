@@ -41,6 +41,9 @@ export class GenerateUuidV1Handler
       case UuidFormats.Base32:
         return uuid.asBase32();
 
+      case UuidFormats.Base58:
+        return uuid.asBase58();
+
       case UuidFormats.Number:
         return uuid.asNumber().toString();
 

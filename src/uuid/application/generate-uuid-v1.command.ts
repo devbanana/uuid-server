@@ -14,6 +14,7 @@ import { Type } from 'class-transformer';
 export enum UuidFormats {
   Rfc4122 = 'rfc4122',
   Base32 = 'base32',
+  Base58 = 'base58',
   Binary = 'binary',
   Number = 'number',
 }

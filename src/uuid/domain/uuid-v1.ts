@@ -2,7 +2,7 @@ import { validate, version } from 'uuid';
 import { gregorianStart, UuidTime } from './uuid-time';
 import { ClockSequence } from './clock-sequence';
 import { Node } from './node';
-import { Base32Encoder } from './base32-encoder';
+import { CrockfordBase32 } from './crockford-base32';
 import { Buffer } from 'buffer';
 
 export class UuidV1 {
@@ -38,7 +38,7 @@ export class UuidV1 {
   }
 
   asBase32(): string {
-    return Base32Encoder.encode(this.uuid);
+    return CrockfordBase32.encode(this.uuid);
   }
 
   asNumber(): BigInt {

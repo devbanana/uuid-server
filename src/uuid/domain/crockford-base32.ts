@@ -8,7 +8,7 @@ const characters = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
  *
  * Spec: https://www.crockford.com/base32.html
  */
-export class Base32Encoder {
+export class CrockfordBase32 {
   static encode(input: Buffer | number): string {
     let pad = true;
     if (typeof input === 'number') {
@@ -51,39 +51,37 @@ export class Base32Encoder {
     input = input.toUpperCase();
     // Translate I, L, and O to valid base 32 characters
     input = input.replace(/O/g, '0').replace(/[IL]/g, '1');
+    // Work from the end
+    input = input.split('').reverse().join('');
 
-    let bits = '';
+    const output: number[] = [];
+    let bitsRead = 0;
+    let buffer = 0;
+
     for (const character of input) {
-      const translated = characters.indexOf(character);
-      if (translated === -1) {
+      const byte = characters.indexOf(character);
+      if (byte === -1) {
         throw new Error(
           `Invalid base 32 character found in string: ${character}`,
         );
       }
 
-      bits += translated.toString(2).padStart(5, '0');
+      buffer |= byte << bitsRead;
+      bitsRead += 5;
+
+      while (bitsRead >= 8) {
+        output.unshift(buffer & 0xff);
+        buffer >>>= 8;
+        bitsRead -= 8;
+      }
     }
 
-    const minBitLength = Math.floor(bits.length / 8) * 8;
-    // See if we can strip zeros to equal minBitLength
-    bits = bits.replace(
-      new RegExp(`^0{${bits.length - minBitLength}}`, 'g'),
-      '',
-    );
-    if (bits.length !== minBitLength) {
-      // Pad to next byte
-      bits = bits.padStart(minBitLength + 8, '0');
-    }
-
-    const bytes = bits.match(/.{8}/g);
-    if (bytes === null) {
-      throw new Error('Could not decode');
+    if (bitsRead >= 5 || buffer > 0) {
+      output.unshift(buffer & 0xff);
     }
 
     return Buffer.from(
-      bytes
-        .map(byte => parseInt(byte, 2).toString(16).padStart(2, '0'))
-        .join(''),
+      output.map(byte => byte.toString(16).padStart(2, '0')).join(''),
       'hex',
     );
   }

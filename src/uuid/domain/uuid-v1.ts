@@ -2,8 +2,8 @@ import { validate, version } from 'uuid';
 import { gregorianStart, UuidTime } from './uuid-time';
 import { ClockSequence } from './clock-sequence';
 import { Node } from './node';
-import { CrockfordBase32 } from './crockford-base32';
 import { Buffer } from 'buffer';
+import { CrockfordBase32 } from 'crockford-base32';
 
 export class UuidV1 {
   private constructor(private readonly uuid: Buffer) {}

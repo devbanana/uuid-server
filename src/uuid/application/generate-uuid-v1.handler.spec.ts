@@ -12,7 +12,7 @@ describe('GenerateUuidV1Handler', () => {
   const uuid = 'd57854d0-2aab-11ec-8da1-817a6c23fd17';
   const mockService = {
     generate: jest.fn(() => {
-      return UuidV1.fromUuid(uuid);
+      return UuidV1.fromRfc4122(uuid);
     }),
   };
 
@@ -105,7 +105,7 @@ describe('GenerateUuidV1Handler', () => {
   `(
     'should format the UUID as $format',
     async ({ format, result }: { format: UuidFormats; result: string }) => {
-      const uuidV1 = UuidV1.fromUuid(uuid);
+      const uuidV1 = UuidV1.fromRfc4122(uuid);
       const spy = jest.spyOn(uuidV1, getFormatMethod(format));
 
       mockService.generate.mockImplementationOnce(() => uuidV1);

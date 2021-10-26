@@ -5,6 +5,7 @@ import { UuidV1 } from '../domain/uuid-v1';
 import { UuidTime } from '../domain/uuid-time';
 import { ClockSequence } from '../domain/clock-sequence';
 import { Node } from '../domain/node';
+import { Buffer } from 'buffer';
 
 @Injectable()
 export class UuidService implements UuidServiceInterface {
@@ -21,6 +22,9 @@ export class UuidService implements UuidServiceInterface {
       options.node = node.asByteArray();
     }
 
-    return UuidV1.fromUuid(v1(options));
+    const buffer = Buffer.alloc(16);
+    v1(options, buffer);
+
+    return UuidV1.fromBuffer(buffer);
   }
 }

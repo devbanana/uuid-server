@@ -1,4 +1,4 @@
-import { validate, version } from 'uuid';
+import { validate } from 'uuid';
 import { gregorianStart, UuidTime } from './uuid-time';
 import { ClockSequence } from './clock-sequence';
 import { Node } from './node';
@@ -7,14 +7,27 @@ import { CrockfordBase32 } from 'crockford-base32';
 import * as base58 from 'bs58';
 
 export class UuidV1 {
-  private constructor(private readonly uuid: Buffer) {}
+  private constructor(private readonly uuid: Buffer) {
+    if (uuid.length !== 16) {
+      throw new Error('UUID must be 16 bytes');
+    }
 
-  static fromUuid(uuid: string): UuidV1 {
+    if ((uuid.readUInt8(6) & 0xf0) !== 0x10) {
+      throw new Error('UUID is not a V1 UUID');
+    }
+
+    if ((uuid.readUInt8(8) & 0xc0) !== 0x80) {
+      throw new Error('UUID is not a variant 1 UUID');
+    }
+  }
+
+  static fromBuffer(buffer: Buffer): UuidV1 {
+    return new UuidV1(buffer);
+  }
+
+  static fromRfc4122(uuid: string): UuidV1 {
     if (!validate(uuid)) {
       throw new Error(`${uuid} is not a valid UUID`);
-    }
-    if (version(uuid) !== 1) {
-      throw new Error(`${uuid} is not a V1 UUID`);
     }
 
     return new UuidV1(Buffer.from(uuid.replace(/-/g, ''), 'hex'));

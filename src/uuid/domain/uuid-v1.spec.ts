@@ -41,6 +41,7 @@ describe('UuidV1', () => {
 
   describe('from Buffer', () => {
     it('should accept a buffer', () => {
+      // noinspection SpellCheckingInspection
       expect(
         UuidV1.fromBuffer(
           Buffer.from('ced717a02ab611ecbce4bf507cc82961', 'hex'),
@@ -56,6 +57,7 @@ describe('UuidV1', () => {
 
     it('should not accept an invalid variant', () => {
       // Bits 64-65 are set to '11' instead of '10'
+      // noinspection SpellCheckingInspection
       expect(() =>
         UuidV1.fromBuffer(
           Buffer.from('3ec8fbdc365611ecc393eb37d804f408', 'hex'),
@@ -65,6 +67,7 @@ describe('UuidV1', () => {
 
     describe('checking the version', () => {
       it('should not accept version 3', () => {
+        // noinspection SpellCheckingInspection
         expect(() =>
           UuidV1.fromBuffer(
             Buffer.from('1dbfc9ac4546358caa6e37e8499ec948', 'hex'),
@@ -89,6 +92,7 @@ describe('UuidV1', () => {
       });
 
       it('should require bits 48-50 to be 0', () => {
+        // noinspection SpellCheckingInspection
         expect(() =>
           UuidV1.fromBuffer(
             Buffer.from('a2333b691a25fafa9e413eb526bc3bb8', 'hex'),
@@ -117,11 +121,16 @@ describe('UuidV1', () => {
   });
 
   it('should return the base32-formatted UUID', () => {
+    // noinspection SpellCheckingInspection
     expect(uuidV1.asBase32()).toBe('6ETWBT0ANP27PBSS5ZA1YCGAB1');
   });
 
   it('should return the base58-formatted UUID', () => {
     expect(uuidV1.asBase58()).toBe('SYQe9KwSqj9TViUYgNsp16');
+  });
+
+  it('should return the base64-formatted UUID', () => {
+    expect(uuidV1.asBase64()).toBe('ztcXoCq2Eey85L9QfMgpYQ==');
   });
 
   it('should return the UUID as a number', () => {

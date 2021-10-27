@@ -59,6 +59,10 @@ export class UuidV1 {
     return base58.encode(this.uuid);
   }
 
+  asBase64(): string {
+    return this.uuid.toString('base64');
+  }
+
   asNumber(): BigInt {
     return (this.uuid.readBigUInt64BE(0) << 64n) | this.uuid.readBigUInt64BE(8);
   }

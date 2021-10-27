@@ -95,11 +95,13 @@ describe('GenerateUuidV1Handler', () => {
     );
   });
 
+  // noinspection SpellCheckingInspection
   it.each`
     format       | result
     ${'rfc4122'} | ${uuid}
     ${'base32'}  | ${'6NF1AD0ANB27P8V8C1F9P27Z8Q'}
     ${'base58'}  | ${'TMtgcQDmejpibckVGv9wca'}
+    ${'base64'}  | ${'1XhU0CqrEeyNoYF6bCP9Fw=='}
     ${'binary'}  | ${'\xd5\x78\x54\xd0\x2a\xab\x11\xec\x8d\xa1\x81\x7a\x6c\x23\xfd\x17'}
     ${'number'}  | ${'283750358940280951322750379673606421783'}
   `(
@@ -131,6 +133,8 @@ function getFormatMethod(format: UuidFormats): FormatFunction {
     ? 'asBase32'
     : format === UuidFormats.Base58
     ? 'asBase58'
+    : format === UuidFormats.Base64
+    ? 'asBase64'
     : format === UuidFormats.Binary
     ? 'asBinary'
     : 'asNumber';

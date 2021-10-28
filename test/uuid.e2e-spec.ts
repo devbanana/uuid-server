@@ -5,50 +5,45 @@ import { INestApplication } from '@nestjs/common';
 import { UuidTime } from '../src/uuid/domain/uuid-time';
 import { ClockSequence } from '../src/uuid/domain/clock-sequence';
 import { Node } from '../src/uuid/domain/node';
+import { UuidFormats } from '../src/uuid/application/generate-uuid-v1.command';
+import { getFormatMethod, UuidMethod } from './get-format-method';
 
 interface ErrorResponse {
   statusCode: string;
   message: string[];
 }
 
-interface UuidMock {
-  asRfc4122: jest.Mock<string>;
-  asBase32: jest.Mock<string>;
-  asBase58: jest.Mock<string>;
-  asBase64: jest.Mock<string>;
-  asBinary: jest.Mock<string>;
-  asNumber: jest.Mock<string>;
-}
+type UuidMock = {
+  [P in UuidFormats as UuidMethod<P>]: jest.Mock<string>;
+};
 
 const uuid = 'aa768af0-2adc-11ec-be43-cfd05c05f21f';
 // noinspection SpellCheckingInspection
-const base32Uuid = '5AET5F0APW27PBWGYFT1E0BWGZ';
-const base58Uuid = 'N3sY2tVyFNg6mc8mo2mMhG';
-const base64Uuid = 'qnaK8CrcEey+Q8/QXAXyHw==';
-const binaryUuid =
-  '\xaa\x76\x8a\xf0\x2a\xdc\x11\xec\xbe\x43\xcf\xd0\x5c\x05\xf2\x1f';
-const numberUuid = '226584268313291534147956877654481039903';
+const uuids: Record<UuidFormats, string> = {
+  rfc4122: uuid,
+  base32: '5AET5F0APW27PBWGYFT1E0BWGZ',
+  base58: 'N3sY2tVyFNg6mc8mo2mMhG',
+  base64: 'qnaK8CrcEey+Q8/QXAXyHw==',
+  binary: '\xaa\x76\x8a\xf0\x2a\xdc\x11\xec\xbe\x43\xcf\xd0\x5c\x05\xf2\x1f',
+  number: '226584268313291534147956877654481039903',
+};
+
+const mockUuidV1: UuidMock = {
+  asRfc4122: jest.fn(() => uuids.rfc4122),
+  asBase32: jest.fn(() => uuids.base32),
+  asBase58: jest.fn(() => uuids.base58),
+  asBase64: jest.fn(() => uuids.base64),
+  asBinary: jest.fn(() => uuids.binary),
+  asNumber: jest.fn(() => uuids.number),
+};
+
+const uuidService = {
+  generate: jest.fn(() => mockUuidV1),
+};
 
 describe('uuid', () => {
   let app: INestApplication;
   let request: supertest.SuperTest<supertest.Test>;
-  let mockUuidV1: UuidMock;
-  let uuidService: { generate: jest.Mock };
-
-  beforeAll(() => {
-    mockUuidV1 = {
-      asRfc4122: jest.fn(() => uuid),
-      asBase32: jest.fn(() => base32Uuid),
-      asBase58: jest.fn(() => base58Uuid),
-      asBase64: jest.fn(() => base64Uuid),
-      asBinary: jest.fn(() => binaryUuid),
-      asNumber: jest.fn(() => numberUuid),
-    };
-
-    uuidService = {
-      generate: jest.fn(() => mockUuidV1),
-    };
-  });
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -203,81 +198,30 @@ describe('uuid', () => {
     expect(responseBody.message[0]).toBe('node must be a MAC Address');
   });
 
-  it('should format the UUID as RFC 4122', async () => {
-    await request.get('/uuid/v1/generate?format=rfc4122').expect(200);
+  it.each`
+    format
+    ${'rfc4122'}
+    ${'base32'}
+    ${'base58'}
+    ${'base64'}
+    ${'binary'}
+    ${'number'}
+  `(
+    'should format the UUID as $format',
+    async ({ format }: { format: UuidFormats }) => {
+      await request
+        .get(`/uuid/v1/generate?format=${format}`)
+        .expect(200)
+        .expect({
+          uuid: uuids[format],
+        });
 
-    expect(mockUuidV1.asRfc4122).toHaveBeenCalledTimes(1);
-    expect(mockUuidV1.asBase32).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asBase58).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asBase64).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asBinary).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asNumber).toHaveBeenCalledTimes(0);
-  });
-
-  it('should format the UUID as base 32', async () => {
-    await request.get('/uuid/v1/generate?format=base32').expect(200).expect({
-      uuid: base32Uuid,
-    });
-
-    expect(mockUuidV1.asRfc4122).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asBase32).toHaveBeenCalledTimes(1);
-    expect(mockUuidV1.asBase58).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asBase64).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asBinary).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asNumber).toHaveBeenCalledTimes(0);
-  });
-
-  it('should format the UUID as base 58', async () => {
-    await request.get('/uuid/v1/generate?format=base58').expect(200).expect({
-      uuid: base58Uuid,
-    });
-
-    expect(mockUuidV1.asRfc4122).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asBase32).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asBase58).toHaveBeenCalledTimes(1);
-    expect(mockUuidV1.asBase64).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asBinary).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asNumber).toHaveBeenCalledTimes(0);
-  });
-
-  it('should format the UUID as base 64', async () => {
-    await request.get('/uuid/v1/generate?format=base64').expect(200).expect({
-      uuid: base64Uuid,
-    });
-
-    expect(mockUuidV1.asRfc4122).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asBase32).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asBase58).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asBase64).toHaveBeenCalledTimes(1);
-    expect(mockUuidV1.asBinary).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asNumber).toHaveBeenCalledTimes(0);
-  });
-
-  it('should format the UUID as binary', async () => {
-    await request.get('/uuid/v1/generate?format=binary').expect(200).expect({
-      uuid: binaryUuid,
-    });
-
-    expect(mockUuidV1.asRfc4122).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asBase32).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asBase58).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asBase64).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asBinary).toHaveBeenCalledTimes(1);
-    expect(mockUuidV1.asNumber).toHaveBeenCalledTimes(0);
-  });
-
-  it('should format the UUID as a number', async () => {
-    await request.get('/uuid/v1/generate?format=number').expect(200).expect({
-      uuid: numberUuid,
-    });
-
-    expect(mockUuidV1.asRfc4122).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asBase32).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asBase58).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asBase64).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asBinary).toHaveBeenCalledTimes(0);
-    expect(mockUuidV1.asNumber).toHaveBeenCalledTimes(1);
-  });
+      // Only the format function should be called, but not the others
+      Object.entries(mockUuidV1).forEach(([key, mock]) =>
+        expect(mock).toBeCalledTimes(key === getFormatMethod(format) ? 1 : 0),
+      );
+    },
+  );
 
   it('should throw an error if an invalid format is given', async () => {
     const response = await request

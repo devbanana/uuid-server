@@ -5,8 +5,7 @@ import { UuidV1 } from '../domain/uuid-v1';
 import { UuidTime } from '../domain/uuid-time';
 import { ClockSequence } from '../domain/clock-sequence';
 import { Node } from '../domain/node';
-
-type FormatFunction = `as${Capitalize<UuidFormats>}`;
+import { getFormatMethod } from '../../../test/get-format-method';
 
 describe('GenerateUuidV1Handler', () => {
   const uuid = 'd57854d0-2aab-11ec-8da1-817a6c23fd17';
@@ -125,17 +124,3 @@ describe('GenerateUuidV1Handler', () => {
     mockService.generate.mockClear();
   });
 });
-
-function getFormatMethod(format: UuidFormats): FormatFunction {
-  return format === UuidFormats.Rfc4122
-    ? 'asRfc4122'
-    : format === UuidFormats.Base32
-    ? 'asBase32'
-    : format === UuidFormats.Base58
-    ? 'asBase58'
-    : format === UuidFormats.Base64
-    ? 'asBase64'
-    : format === UuidFormats.Binary
-    ? 'asBinary'
-    : 'asNumber';
-}

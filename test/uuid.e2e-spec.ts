@@ -5,8 +5,8 @@ import { INestApplication } from '@nestjs/common';
 import { UuidTime } from '../src/uuid/domain/uuid-time';
 import { ClockSequence } from '../src/uuid/domain/clock-sequence';
 import { Node } from '../src/uuid/domain/node';
-import { UuidFormats } from '../src/uuid/application/generate-uuid-v1.command';
 import { getFormatMethod, UuidMethod } from './get-format-method';
+import { UuidFormats } from '../src/uuid/domain/uuid-formats';
 
 interface ErrorResponse {
   statusCode: string;

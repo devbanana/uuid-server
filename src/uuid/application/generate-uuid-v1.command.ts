@@ -10,22 +10,8 @@ import {
 import MinDateString from './min-date-string.validator';
 import MaxDateString from './max-date-string.validator';
 import { Type } from 'class-transformer';
-
-export enum UuidFormats {
-  Rfc4122 = 'rfc4122',
-  Base32 = 'base32',
-  Base58 = 'base58',
-  Base64 = 'base64',
-  Binary = 'binary',
-  Number = 'number',
-}
-
-interface CommandOptions {
-  time?: string;
-  clockSeq?: number;
-  node?: string;
-  format?: UuidFormats;
-}
+import { UuidFormats } from '../domain/uuid-formats';
+import { GenerateUuidV1CommandOptions } from './generate-uuid-v1.command.options';
 
 export class GenerateUuidV1Command {
   /**
@@ -82,7 +68,7 @@ export class GenerateUuidV1Command {
   @IsEnum(UuidFormats, { message: 'An invalid format was provided' })
   public readonly format?: UuidFormats = UuidFormats.Rfc4122;
 
-  constructor(options?: CommandOptions) {
+  constructor(options?: GenerateUuidV1CommandOptions) {
     if (options?.time !== undefined) {
       this.time = options.time;
     }

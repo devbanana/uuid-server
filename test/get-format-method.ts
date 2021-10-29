@@ -1,4 +1,4 @@
-import { UuidFormats } from '../src/uuid/application/generate-uuid-v1.command';
+import { UuidFormats } from '../src/uuid/domain/uuid-formats';
 
 export type UuidMethod<T extends UuidFormats> = `as${Capitalize<T>}`;
 

@@ -1,4 +1,4 @@
-import { GenerateUuidV1Command, UuidFormats } from './generate-uuid-v1.command';
+import { GenerateUuidV1Command } from './generate-uuid-v1.command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { UuidServiceInterface } from '../domain/uuid-service.interface';
@@ -7,6 +7,7 @@ import { ClockSequence } from '../domain/clock-sequence';
 import { Node } from '../domain/node';
 import { UuidV1 } from '../domain/uuid-v1';
 import { GenerateUuidViewModel } from './generate-uuid.view-model';
+import { UuidFormats } from '../domain/uuid-formats';
 
 @CommandHandler(GenerateUuidV1Command)
 export class GenerateUuidV1Handler

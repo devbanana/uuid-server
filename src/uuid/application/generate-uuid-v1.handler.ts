@@ -6,17 +6,18 @@ import { UuidTime } from '../domain/uuid-time';
 import { ClockSequence } from '../domain/clock-sequence';
 import { Node } from '../domain/node';
 import { UuidV1 } from '../domain/uuid-v1';
+import { GenerateUuidViewModel } from './generate-uuid.view-model';
 
 @CommandHandler(GenerateUuidV1Command)
 export class GenerateUuidV1Handler
-  implements ICommandHandler<GenerateUuidV1Command, string>
+  implements ICommandHandler<GenerateUuidV1Command, GenerateUuidViewModel>
 {
   constructor(
     @Inject('UuidServiceInterface')
     private readonly uuidService: UuidServiceInterface,
   ) {}
 
-  execute(command: GenerateUuidV1Command): Promise<string> {
+  execute(command: GenerateUuidV1Command): Promise<GenerateUuidViewModel> {
     const time =
       command.time === undefined
         ? undefined
@@ -30,7 +31,9 @@ export class GenerateUuidV1Handler
 
     const uuid = this.uuidService.generate(time, clockSeq, node);
 
-    return Promise.resolve(GenerateUuidV1Handler.getFormat(command, uuid));
+    return Promise.resolve(
+      new GenerateUuidViewModel(GenerateUuidV1Handler.getFormat(command, uuid)),
+    );
   }
 
   private static getFormat(

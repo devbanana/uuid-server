@@ -1,5 +1,6 @@
 import { GenerateUuidV1Handler } from './generate-uuid-v1.handler';
 import { GenerateUuidV1Command, UuidFormats } from './generate-uuid-v1.command';
+import { GenerateUuidViewModel } from './generate-uuid.view-model';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UuidV1 } from '../domain/uuid-v1';
 import { UuidTime } from '../domain/uuid-time';
@@ -35,7 +36,8 @@ describe('GenerateUuidV1Handler', () => {
   it('should generate a V1 UUID', async () => {
     const uuidResult = await handler.execute(new GenerateUuidV1Command());
 
-    expect(uuidResult).toBe(uuid);
+    expect(uuidResult).toBeInstanceOf(GenerateUuidViewModel);
+    expect(uuidResult.uuid).toBe(uuid);
     expect(mockService.generate).toHaveBeenCalled();
     expect(mockService.generate).toHaveBeenCalledWith(
       undefined,
@@ -46,11 +48,8 @@ describe('GenerateUuidV1Handler', () => {
 
   it('should pass the time to the UUID service', async () => {
     const time = '2021-10-12T00:00:00Z';
-    const uuidResult = await handler.execute(
-      new GenerateUuidV1Command({ time }),
-    );
+    await handler.execute(new GenerateUuidV1Command({ time }));
 
-    expect(uuidResult).toBe(uuid);
     expect(mockService.generate).toHaveBeenCalledWith(
       UuidTime.fromString(time),
       undefined,
@@ -60,11 +59,8 @@ describe('GenerateUuidV1Handler', () => {
 
   it('should pass the clock sequence to the UUID service', async () => {
     const clockSeq = 0x38f4;
-    const uuidResult = await handler.execute(
-      new GenerateUuidV1Command({ clockSeq }),
-    );
+    await handler.execute(new GenerateUuidV1Command({ clockSeq }));
 
-    expect(uuidResult).toBe(uuid);
     expect(mockService.generate).toHaveBeenCalledWith(
       undefined,
       ClockSequence.fromNumber(clockSeq),
@@ -116,7 +112,7 @@ describe('GenerateUuidV1Handler', () => {
       );
 
       expect(spy).toHaveBeenCalled();
-      expect(response).toBe(result);
+      expect(response.uuid).toBe(result);
     },
   );
 

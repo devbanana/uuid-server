@@ -7,8 +7,8 @@ import {
   Max,
   Min,
 } from 'class-validator';
-import MinDateString from '../min-date-string.validator';
-import MaxDateString from '../max-date-string.validator';
+import MinDateString from '../validators/min-date-string.validator';
+import MaxDateString from '../validators/max-date-string.validator';
 import { Type } from 'class-transformer';
 import { UuidFormats } from '../../domain/uuid-formats';
 import { GenerateUuidV1CommandOptions } from './generate-uuid-v1.command.options';

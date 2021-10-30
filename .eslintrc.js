@@ -16,4 +16,8 @@ module.exports = {
     jest: true,
   },
   ignorePatterns: ['.eslintrc.js'],
+  rules: {
+    '@typescript-eslint/no-empty-function': ['warn', { allow: ['methods'] }],
+    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+  },
 };

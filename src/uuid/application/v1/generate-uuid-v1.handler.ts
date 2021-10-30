@@ -30,7 +30,7 @@ export class GenerateUuidV1Handler
     const node =
       command.node === undefined ? undefined : Node.fromString(command.node);
 
-    const uuid = this.uuidService.generate(time, clockSeq, node);
+    const uuid = this.uuidService.generateV1(time, clockSeq, node);
 
     return Promise.resolve(
       new GenerateUuidViewModel(GenerateUuidV1Handler.getFormat(command, uuid)),

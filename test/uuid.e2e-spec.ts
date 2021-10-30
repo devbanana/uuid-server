@@ -38,7 +38,7 @@ const mockUuidV1: UuidMock = {
 };
 
 const uuidService = {
-  generate: jest.fn(() => mockUuidV1),
+  generateV1: jest.fn(() => mockUuidV1),
 };
 
 describe('uuid', () => {
@@ -62,8 +62,8 @@ describe('uuid', () => {
   it('should generate a UUID V1', async () => {
     await request.get('/uuid/v1/generate').expect(200).expect({ uuid });
 
-    expect(uuidService.generate).toHaveBeenCalled();
-    expect(uuidService.generate).toHaveBeenCalledWith(
+    expect(uuidService.generateV1).toHaveBeenCalled();
+    expect(uuidService.generateV1).toHaveBeenCalledWith(
       undefined,
       undefined,
       undefined,
@@ -76,8 +76,8 @@ describe('uuid', () => {
       .expect(200)
       .expect({ uuid });
 
-    expect(uuidService.generate).toHaveBeenCalled();
-    expect(uuidService.generate).toHaveBeenCalledWith(
+    expect(uuidService.generateV1).toHaveBeenCalled();
+    expect(uuidService.generateV1).toHaveBeenCalledWith(
       UuidTime.fromString('2021-10-12T00:00:00Z'),
       undefined,
       undefined,
@@ -117,8 +117,8 @@ describe('uuid', () => {
   it('should use the given clock sequence for generating the UUID', async () => {
     await request.get('/uuid/v1/generate?clockSeq=2024').expect(200);
 
-    expect(uuidService.generate).toHaveBeenCalled();
-    expect(uuidService.generate).toHaveBeenCalledWith(
+    expect(uuidService.generateV1).toHaveBeenCalled();
+    expect(uuidService.generateV1).toHaveBeenCalledWith(
       undefined,
       ClockSequence.fromNumber(2024),
       undefined,
@@ -168,7 +168,7 @@ describe('uuid', () => {
   it('should allow clock sequence to be 0', async () => {
     await request.get('/uuid/v1/generate?clockSeq=0').expect(200);
 
-    expect(uuidService.generate).toHaveBeenCalledWith(
+    expect(uuidService.generateV1).toHaveBeenCalledWith(
       undefined,
       ClockSequence.fromNumber(0),
       undefined,
@@ -179,7 +179,7 @@ describe('uuid', () => {
     const node = 'DE:37:C3:74:65:A0';
     await request.get(`/uuid/v1/generate?node=${node}`).expect(200);
 
-    expect(uuidService.generate).toHaveBeenCalledWith(
+    expect(uuidService.generateV1).toHaveBeenCalledWith(
       undefined,
       undefined,
       Node.fromString(node),

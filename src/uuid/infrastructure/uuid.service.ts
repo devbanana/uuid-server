@@ -9,7 +9,7 @@ import { Buffer } from 'buffer';
 
 @Injectable()
 export class UuidService implements UuidServiceInterface {
-  generate(time?: UuidTime, clockSeq?: ClockSequence, node?: Node): UuidV1 {
+  generateV1(time?: UuidTime, clockSeq?: ClockSequence, node?: Node): UuidV1 {
     const options: V1Options = {};
 
     if (time !== undefined) {

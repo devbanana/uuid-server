@@ -12,7 +12,7 @@ import { UuidFormats } from '../../domain/uuid-formats';
 describe('GenerateUuidV1Handler', () => {
   const uuid = 'd57854d0-2aab-11ec-8da1-817a6c23fd17';
   const mockService = {
-    generate: jest.fn(() => {
+    generateV1: jest.fn(() => {
       return UuidV1.fromRfc4122(uuid);
     }),
   };
@@ -39,8 +39,8 @@ describe('GenerateUuidV1Handler', () => {
 
     expect(uuidResult).toBeInstanceOf(GenerateUuidViewModel);
     expect(uuidResult.uuid).toBe(uuid);
-    expect(mockService.generate).toHaveBeenCalled();
-    expect(mockService.generate).toHaveBeenCalledWith(
+    expect(mockService.generateV1).toHaveBeenCalled();
+    expect(mockService.generateV1).toHaveBeenCalledWith(
       undefined,
       undefined,
       undefined,
@@ -51,7 +51,7 @@ describe('GenerateUuidV1Handler', () => {
     const time = '2021-10-12T00:00:00Z';
     await handler.execute(new GenerateUuidV1Command({ time }));
 
-    expect(mockService.generate).toHaveBeenCalledWith(
+    expect(mockService.generateV1).toHaveBeenCalledWith(
       UuidTime.fromString(time),
       undefined,
       undefined,
@@ -62,7 +62,7 @@ describe('GenerateUuidV1Handler', () => {
     const clockSeq = 0x38f4;
     await handler.execute(new GenerateUuidV1Command({ clockSeq }));
 
-    expect(mockService.generate).toHaveBeenCalledWith(
+    expect(mockService.generateV1).toHaveBeenCalledWith(
       undefined,
       ClockSequence.fromNumber(clockSeq),
       undefined,
@@ -73,7 +73,7 @@ describe('GenerateUuidV1Handler', () => {
     const clockSeq = 0;
     await handler.execute(new GenerateUuidV1Command({ clockSeq }));
 
-    expect(mockService.generate).toHaveBeenCalledWith(
+    expect(mockService.generateV1).toHaveBeenCalledWith(
       undefined,
       ClockSequence.fromNumber(0),
       undefined,
@@ -84,7 +84,7 @@ describe('GenerateUuidV1Handler', () => {
     const node = '0D:02:F4:17:EE:DF';
     await handler.execute(new GenerateUuidV1Command({ node }));
 
-    expect(mockService.generate).toHaveBeenCalledWith(
+    expect(mockService.generateV1).toHaveBeenCalledWith(
       undefined,
       undefined,
       Node.fromString(node),
@@ -106,7 +106,7 @@ describe('GenerateUuidV1Handler', () => {
       const uuidV1 = UuidV1.fromRfc4122(uuid);
       const spy = jest.spyOn(uuidV1, getFormatMethod(format));
 
-      mockService.generate.mockImplementationOnce(() => uuidV1);
+      mockService.generateV1.mockImplementationOnce(() => uuidV1);
 
       const response = await handler.execute(
         new GenerateUuidV1Command({ format }),
@@ -118,6 +118,6 @@ describe('GenerateUuidV1Handler', () => {
   );
 
   afterEach(() => {
-    mockService.generate.mockClear();
+    mockService.generateV1.mockClear();
   });
 });

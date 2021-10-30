@@ -6,7 +6,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { GenerateUuidV1Command } from '../application/generate-uuid-v1.command';
+import { GenerateUuidV1Command } from '../application/v1/generate-uuid-v1.command';
 import { GenerateUuidViewModel } from '../application/generate-uuid.view-model';
 import { ApiTags } from '@nestjs/swagger';
 

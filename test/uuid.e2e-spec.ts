@@ -2,9 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as supertest from 'supertest';
 import { UuidModule } from '../src/uuid/uuid.module';
 import { INestApplication } from '@nestjs/common';
-import { UuidTime } from '../src/uuid/domain/uuid-time';
-import { ClockSequence } from '../src/uuid/domain/clock-sequence';
-import { Node } from '../src/uuid/domain/node';
+import { UuidTime } from '../src/uuid/domain/v1/uuid-time';
+import { ClockSequence } from '../src/uuid/domain/v1/clock-sequence';
+import { Node } from '../src/uuid/domain/v1/node';
 import { getFormatMethod, UuidMethod } from './get-format-method';
 import { UuidFormats } from '../src/uuid/domain/uuid-formats';
 

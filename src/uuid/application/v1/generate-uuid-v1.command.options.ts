@@ -1,4 +1,4 @@
-import { UuidFormats } from '../domain/uuid-formats';
+import { UuidFormats } from '../../domain/uuid-formats';
 
 export interface GenerateUuidV1CommandOptions {
   time?: string;

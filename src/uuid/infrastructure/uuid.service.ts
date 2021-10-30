@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { v1, V1Options } from 'uuid';
 import { UuidServiceInterface } from '../domain/uuid-service.interface';
-import { UuidV1 } from '../domain/uuid-v1';
-import { UuidTime } from '../domain/uuid-time';
-import { ClockSequence } from '../domain/clock-sequence';
-import { Node } from '../domain/node';
+import { UuidV1 } from '../domain/v1/uuid-v1';
+import { UuidTime } from '../domain/v1/uuid-time';
+import { ClockSequence } from '../domain/v1/clock-sequence';
+import { Node } from '../domain/v1/node';
 import { Buffer } from 'buffer';
 
 @Injectable()

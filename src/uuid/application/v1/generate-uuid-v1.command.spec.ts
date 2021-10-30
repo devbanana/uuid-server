@@ -1,7 +1,7 @@
 import { GenerateUuidV1Command } from './generate-uuid-v1.command';
 import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
-import { UuidFormats } from '../domain/uuid-formats';
+import { UuidFormats } from '../../domain/uuid-formats';
 
 describe('GenerateUuidV1Command', () => {
   it('should be defined', () => {

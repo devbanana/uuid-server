@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UuidService } from './uuid.service';
 import { validate, version } from 'uuid';
-import { UuidTime } from '../domain/uuid-time';
-import { ClockSequence } from '../domain/clock-sequence';
-import { Node } from '../domain/node';
+import { UuidTime } from '../domain/v1/uuid-time';
+import { ClockSequence } from '../domain/v1/clock-sequence';
+import { Node } from '../domain/v1/node';
 
 describe('UuidService', () => {
   let provider: UuidService;

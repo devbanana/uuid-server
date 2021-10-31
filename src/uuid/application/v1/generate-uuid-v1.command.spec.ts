@@ -1,5 +1,4 @@
 import { GenerateUuidV1Command } from './generate-uuid-v1.command';
-import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 import { UuidFormats } from '../../domain/uuid-formats';
 
@@ -9,99 +8,72 @@ describe('GenerateUuidV1Command', () => {
   });
 
   it('should require time to be a valid date', async () => {
-    const command = new GenerateUuidV1Command({ time: 'foo' });
-    const errors = await validate(command);
-
-    expect(errors).toHaveLength(1);
-    expect(errors[0].property).toBe('time');
-    expect(errors[0].constraints).toHaveProperty('isIso8601');
+    await expect(
+      new GenerateUuidV1Command({ time: 'foo' }),
+    ).toHaveValidationConstraint('isIso8601', 'time');
   });
 
   it('should require time to not be before 1582-10-15 at midnight UTC', async () => {
-    const command = new GenerateUuidV1Command({ time: '1582-10-14T23:59:59Z' });
-    const errors = await validate(command);
-
-    expect(errors).toHaveLength(1);
-    expect(errors[0].property).toBe('time');
-    expect(errors[0].constraints).toHaveProperty('minDateString');
+    await expect(
+      new GenerateUuidV1Command({ time: '1582-10-14T23:59:59Z' }),
+    ).toHaveValidationConstraint('minDateString', 'time');
   });
 
   it('should allow time to be exactly 1582-10-15 at midnight UTC', async () => {
-    const command = new GenerateUuidV1Command({ time: '1582-10-15T00:00:00Z' });
-    const errors = await validate(command);
-
-    expect(errors).toHaveLength(0);
+    await expect(
+      new GenerateUuidV1Command({ time: '1582-10-15T00:00:00Z' }),
+    ).not.toHaveValidationErrorsOn('time');
   });
 
   it('should not allow time to be an empty string', async () => {
-    const command = new GenerateUuidV1Command({ time: '' });
-    const errors = await validate(command);
-
-    expect(errors).toHaveLength(1);
-    expect(errors[0].property).toBe('time');
-    expect(errors[0].constraints).toHaveProperty('isIso8601');
+    await expect(
+      new GenerateUuidV1Command({ time: '' }),
+    ).toHaveValidationConstraint('isIso8601', 'time');
   });
 
   it('should require time to not be after 5236-03-31 at 21:21:00.684 UTC', async () => {
-    const command = new GenerateUuidV1Command({
-      time: '5236-03-31T21:21:00.684Z',
-    });
-    const errors = await validate(command);
-
-    expect(errors).toHaveLength(1);
-    expect(errors[0].property).toBe('time');
-    expect(errors[0].constraints).toHaveProperty('maxDateString');
+    await expect(
+      new GenerateUuidV1Command({
+        time: '5236-03-31T21:21:00.684Z',
+      }),
+    ).toHaveValidationConstraint('maxDateString', 'time');
   });
 
   it('should allow time to be exactly 5236-03-31 at 21:21:00.683 UTC', async () => {
-    const command = new GenerateUuidV1Command({
-      time: '5236-03-31T21:21:00.683Z',
-    });
-    const errors = await validate(command);
-
-    expect(errors).toHaveLength(0);
+    await expect(
+      new GenerateUuidV1Command({
+        time: '5236-03-31T21:21:00.683Z',
+      }),
+    ).not.toHaveValidationErrorsOn('time');
   });
 
   it('should require clockSeq to be at least 0', async () => {
-    const command = new GenerateUuidV1Command({ clockSeq: -3 });
-    const errors = await validate(command);
-
-    expect(errors).toHaveLength(1);
-    expect(errors[0].property).toBe('clockSeq');
-    expect(errors[0].constraints).toHaveProperty('min');
+    await expect(
+      new GenerateUuidV1Command({ clockSeq: -3 }),
+    ).toHaveValidationConstraint('min', 'clockSeq');
   });
 
   it('should require clockSeq to not be greater than 0x3fff', async () => {
-    const command = new GenerateUuidV1Command({ clockSeq: 0x4000 });
-    const errors = await validate(command);
-
-    expect(errors).toHaveLength(1);
-    expect(errors[0].property).toBe('clockSeq');
-    expect(errors[0].constraints).toHaveProperty('max');
+    await expect(
+      new GenerateUuidV1Command({ clockSeq: 0x4000 }),
+    ).toHaveValidationConstraint('max', 'clockSeq');
   });
 
   it('should not allow a decimal to be passed for clockSeq', async () => {
-    const command = new GenerateUuidV1Command({ clockSeq: 3.8 });
-    const errors = await validate(command);
-
-    expect(errors).toHaveLength(1);
-    expect(errors[0].property).toBe('clockSeq');
-    expect(errors[0].constraints).toHaveProperty('isInt');
+    await expect(
+      new GenerateUuidV1Command({ clockSeq: 3.8 }),
+    ).toHaveValidationConstraint('isInt', 'clockSeq');
   });
 
   it('should allow a numeric string to be passed for clockSeq', async () => {
     const command = plainToClass(GenerateUuidV1Command, { clockSeq: '16230' });
-    const errors = await validate(command);
-
-    expect(errors).toHaveLength(0);
+    await expect(command).not.toHaveValidationErrorsOn('clockSeq');
     expect(command.clockSeq).toBe(16_230);
   });
 
   it('should allow clockSeq to be 0', async () => {
     const command = new GenerateUuidV1Command({ clockSeq: 0 });
-    const errors = await validate(command);
-
-    expect(errors).toHaveLength(0);
+    await expect(command).not.toHaveValidationErrorsOn('clockSeq');
     expect(command.clockSeq).toBe(0);
   });
 
@@ -112,27 +84,21 @@ describe('GenerateUuidV1Command', () => {
       ['should accept dots', 'CFF4.94C8.C0EA'],
       ['should accept a lowercase address', 'a3:9b:b5:0a:80:26'],
     ])('%s', async (description, mac) => {
-      const command = new GenerateUuidV1Command({ node: mac });
-      const errors = await validate(command);
-      expect(errors).toHaveLength(0);
+      await expect(
+        new GenerateUuidV1Command({ node: mac }),
+      ).not.toHaveValidationErrorsOn('node');
     });
 
     it('should not accept non-hexadecimal values', async () => {
-      const command = new GenerateUuidV1Command({ node: '35:07:CZ:17:6C:E7' });
-      const errors = await validate(command);
-
-      expect(errors).toHaveLength(1);
-      expect(errors[0].property).toBe('node');
-      expect(errors[0].constraints).toHaveProperty('isMacAddress');
+      await expect(
+        new GenerateUuidV1Command({ node: '35:07:CZ:17:6C:E7' }),
+      ).toHaveValidationConstraint('isMacAddress', 'node');
     });
 
     it('cannot be an empty string', async () => {
-      const command = new GenerateUuidV1Command({ node: '' });
-      const errors = await validate(command);
-
-      expect(errors).toHaveLength(1);
-      expect(errors[0].property).toBe('node');
-      expect(errors[0].constraints).toHaveProperty('isMacAddress');
+      await expect(
+        new GenerateUuidV1Command({ node: '' }),
+      ).toHaveValidationConstraint('isMacAddress', 'node');
     });
   });
 
@@ -146,19 +112,15 @@ describe('GenerateUuidV1Command', () => {
       ${'binary'}
       ${'number'}
     `('can be $format', async ({ format }: { format: UuidFormats }) => {
-      const command = plainToClass(GenerateUuidV1Command, { format });
-      const errors = await validate(command);
-
-      expect(errors).toHaveLength(0);
+      await expect(
+        plainToClass(GenerateUuidV1Command, { format }),
+      ).not.toHaveValidationErrorsOn('format');
     });
 
     it('cannot be an invalid format', async () => {
-      const command = plainToClass(GenerateUuidV1Command, { format: 'foo' });
-      const errors = await validate(command);
-
-      expect(errors).toHaveLength(1);
-      expect(errors[0].property).toBe('format');
-      expect(errors[0].constraints).toHaveProperty('isEnum');
+      await expect(
+        plainToClass(GenerateUuidV1Command, { format: 'foo' }),
+      ).toHaveValidationConstraint('isEnum', 'format');
     });
 
     it('is set in the constructor', () => {

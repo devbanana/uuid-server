@@ -91,6 +91,9 @@
     "testEnvironment": "node",
     "setupFiles": [
       "reflect-metadata"
+    ],
+    "setupFilesAfterEnv": [
+      "../test/setup.ts"
     ]
   }
 }

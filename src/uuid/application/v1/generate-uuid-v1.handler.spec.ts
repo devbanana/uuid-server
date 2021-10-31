@@ -8,6 +8,7 @@ import { ClockSequence } from '../../domain/time-based/clock-sequence';
 import { Node } from '../../domain/time-based/node';
 import { getFormatMethod } from '../../../../test/get-format-method';
 import { UuidFormats } from '../../domain/uuid-formats';
+import { UuidFormatter } from '../../domain/uuid-formatter';
 
 describe('GenerateUuidV1Handler', () => {
   const uuid = 'd57854d0-2aab-11ec-8da1-817a6c23fd17';
@@ -24,6 +25,7 @@ describe('GenerateUuidV1Handler', () => {
       providers: [
         GenerateUuidV1Handler,
         { provide: 'UuidServiceInterface', useValue: mockService },
+        UuidFormatter,
       ],
     }).compile();
 

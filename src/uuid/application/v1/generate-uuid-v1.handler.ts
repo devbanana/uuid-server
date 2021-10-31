@@ -5,9 +5,8 @@ import { UuidServiceInterface } from '../../domain/uuid-service.interface';
 import { UuidTime } from '../../domain/time-based/uuid-time';
 import { ClockSequence } from '../../domain/time-based/clock-sequence';
 import { Node } from '../../domain/time-based/node';
-import { UuidV1 } from '../../domain/time-based/uuid-v1';
 import { GenerateUuidViewModel } from '../generate-uuid.view-model';
-import { UuidFormats } from '../../domain/uuid-formats';
+import { UuidFormatter } from '../../domain/uuid-formatter';
 
 @CommandHandler(GenerateUuidV1Command)
 export class GenerateUuidV1Handler
@@ -16,6 +15,7 @@ export class GenerateUuidV1Handler
   constructor(
     @Inject('UuidServiceInterface')
     private readonly uuidService: UuidServiceInterface,
+    private readonly formatter: UuidFormatter,
   ) {}
 
   execute(command: GenerateUuidV1Command): Promise<GenerateUuidViewModel> {
@@ -33,32 +33,7 @@ export class GenerateUuidV1Handler
     const uuid = this.uuidService.generateV1(time, clockSeq, node);
 
     return Promise.resolve(
-      new GenerateUuidViewModel(GenerateUuidV1Handler.getFormat(command, uuid)),
+      new GenerateUuidViewModel(this.formatter.format(uuid, command.format)),
     );
-  }
-
-  private static getFormat(
-    command: GenerateUuidV1Command,
-    uuid: UuidV1,
-  ): string {
-    switch (command.format) {
-      case UuidFormats.Base32:
-        return uuid.asBase32();
-
-      case UuidFormats.Base58:
-        return uuid.asBase58();
-
-      case UuidFormats.Base64:
-        return uuid.asBase64();
-
-      case UuidFormats.Number:
-        return uuid.asNumber().toString();
-
-      case UuidFormats.Binary:
-        return uuid.asBinary();
-
-      default:
-        return uuid.asRfc4122();
-    }
   }
 }

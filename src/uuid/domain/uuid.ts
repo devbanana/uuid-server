@@ -1,6 +1,7 @@
 import { Buffer } from 'buffer';
 import { CrockfordBase32 } from 'crockford-base32';
 import * as base58 from 'bs58';
+import validator from 'validator';
 
 interface UuidConstructor<T extends Uuid> {
   new (uuid: Buffer): T;
@@ -32,11 +33,7 @@ export abstract class Uuid {
     this: UuidConstructor<T>,
     uuid: string,
   ): T {
-    if (
-      !uuid.match(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/g,
-      )
-    ) {
+    if (!validator.isUUID(uuid)) {
       throw new Error(`${uuid} is not a valid UUID`);
     }
 

@@ -9,6 +9,8 @@ import { UuidName } from './name-based/uuid-name';
 
 export interface UuidServiceInterface {
   generateV1(time?: UuidTime, clockSeq?: ClockSequence, node?: Node): UuidV1;
-  generateV3(name: UuidName, namespace: UuidNamespace): Promise<UuidV3>;
-  generateV5(name: UuidName, namespace: UuidNamespace): Promise<UuidV5>;
+
+  generateV3(namespace: UuidNamespace, name: UuidName): Promise<UuidV3>;
+
+  generateV5(namespace: UuidNamespace, name: UuidName): Promise<UuidV5>;
 }

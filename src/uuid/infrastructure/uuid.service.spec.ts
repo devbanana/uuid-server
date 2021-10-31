@@ -63,8 +63,8 @@ describe('UuidService', () => {
 
     it('should generate a V3 UUID', async () => {
       const result = await provider.generateV3(
-        UuidName.fromString('foo'),
         UuidNamespace.fromRfc4122(namespace),
+        UuidName.fromString('foo'),
       );
 
       expect(result.asRfc4122()).toBe('66a2f74f-6ebc-3469-b464-a3f2820c37b3');
@@ -72,8 +72,8 @@ describe('UuidService', () => {
 
     it('should generate a V5 UUID', async () => {
       const result = await provider.generateV5(
-        UuidName.fromString('foo'),
         UuidNamespace.fromRfc4122(namespace),
+        UuidName.fromString('foo'),
       );
 
       expect(result.asRfc4122()).toBe('7b366cbd-391c-5cfb-bb55-cba2db422d0e');

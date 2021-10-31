@@ -33,11 +33,11 @@ export class UuidService implements UuidServiceInterface {
     return UuidV1.fromBuffer(buffer);
   }
 
-  generateV3(name: UuidName, namespace: UuidNamespace): Promise<UuidV3> {
+  generateV3(namespace: UuidNamespace, name: UuidName): Promise<UuidV3> {
     return this.createNameBasedUuid(namespace, name, 3);
   }
 
-  generateV5(name: UuidName, namespace: UuidNamespace): Promise<UuidV5> {
+  generateV5(namespace: UuidNamespace, name: UuidName): Promise<UuidV5> {
     return this.createNameBasedUuid(namespace, name, 5);
   }
 

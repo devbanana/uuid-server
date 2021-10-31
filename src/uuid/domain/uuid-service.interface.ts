@@ -1,7 +1,7 @@
-import { UuidV1 } from './v1/uuid-v1';
-import { UuidTime } from './v1/uuid-time';
-import { ClockSequence } from './v1/clock-sequence';
-import { Node } from './v1/node';
+import { UuidV1 } from './time-based/uuid-v1';
+import { UuidTime } from './time-based/uuid-time';
+import { ClockSequence } from './time-based/clock-sequence';
+import { Node } from './time-based/node';
 import { UuidV3 } from './name-based/uuid-v3';
 import { UuidV5 } from './name-based/uuid-v5';
 import { UuidNamespace } from './name-based/uuid-namespace';

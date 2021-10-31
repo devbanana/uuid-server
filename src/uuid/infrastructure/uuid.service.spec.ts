@@ -4,6 +4,8 @@ import { validate, version } from 'uuid';
 import { UuidTime } from '../domain/v1/uuid-time';
 import { ClockSequence } from '../domain/v1/clock-sequence';
 import { Node } from '../domain/v1/node';
+import { UuidNamespace } from '../domain/name-based/uuid-namespace';
+import { UuidName } from '../domain/name-based/uuid-name';
 
 describe('UuidService', () => {
   let provider: UuidService;
@@ -53,6 +55,28 @@ describe('UuidService', () => {
       );
 
       expect(uuid.node).toStrictEqual(Node.fromString('FE:3E:9A:8B:06:CD'));
+    });
+  });
+
+  describe('Name-based', () => {
+    const namespace = '41424344-4546-4748-494a-4b4c4d4e4f50';
+
+    it('should generate a V3 UUID', async () => {
+      const result = await provider.generateV3(
+        UuidName.fromString('foo'),
+        UuidNamespace.fromRfc4122(namespace),
+      );
+
+      expect(result.asRfc4122()).toBe('66a2f74f-6ebc-3469-b464-a3f2820c37b3');
+    });
+
+    it('should generate a V5 UUID', async () => {
+      const result = await provider.generateV5(
+        UuidName.fromString('foo'),
+        UuidNamespace.fromRfc4122(namespace),
+      );
+
+      expect(result.asRfc4122()).toBe('7b366cbd-391c-5cfb-bb55-cba2db422d0e');
     });
   });
 });

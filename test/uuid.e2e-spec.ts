@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as supertest from 'supertest';
 import { UuidModule } from '../src/uuid/uuid.module';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { UuidTime } from '../src/uuid/domain/time-based/uuid-time';
 import { ClockSequence } from '../src/uuid/domain/time-based/clock-sequence';
 import { Node } from '../src/uuid/domain/time-based/node';
@@ -54,6 +54,9 @@ describe('uuid', () => {
       .compile();
 
     app = module.createNestApplication();
+    app.useGlobalPipes(
+      new ValidationPipe({ transform: true, stopAtFirstError: true }),
+    );
     await app.init();
 
     request = supertest(app.getHttpServer());

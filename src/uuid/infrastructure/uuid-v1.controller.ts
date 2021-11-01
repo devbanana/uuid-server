@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Query,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { GenerateUuidV1Command } from '../application/v1/generate-uuid-v1.command';
 import { GenerateUuidViewModel } from '../application/generate-uuid.view-model';
@@ -19,7 +13,6 @@ export class UuidV1Controller {
    * Generate a V1 UUID.
    */
   @Get('generate')
-  @UsePipes(new ValidationPipe({ transform: true, stopAtFirstError: true }))
   async generate(
     @Query() command: GenerateUuidV1Command,
   ): Promise<GenerateUuidViewModel> {

@@ -1,5 +1,4 @@
 import {
-  IsEnum,
   IsInt,
   IsISO8601,
   IsMACAddress,
@@ -10,10 +9,10 @@ import {
 import MinDateString from '../validators/min-date-string.validator';
 import MaxDateString from '../validators/max-date-string.validator';
 import { Type } from 'class-transformer';
-import { UuidFormats } from '../../domain/uuid-formats';
 import { GenerateUuidV1CommandOptions } from './generate-uuid-v1.command.options';
+import { GenerateUuidCommand } from '../generate-uuid.command';
 
-export class GenerateUuidV1Command {
+export class GenerateUuidV1Command extends GenerateUuidCommand {
   /**
    * The time to be used for the timestamp field of this UUID.
    *
@@ -61,14 +60,9 @@ export class GenerateUuidV1Command {
   @IsMACAddress()
   public readonly node?: string;
 
-  /**
-   * The format in which to provide the generated UUID.
-   */
-  @IsOptional()
-  @IsEnum(UuidFormats, { message: 'An invalid format was provided' })
-  public readonly format?: UuidFormats = UuidFormats.Rfc4122;
-
   constructor(options?: GenerateUuidV1CommandOptions) {
+    super(options?.format);
+
     if (options?.time !== undefined) {
       this.time = options.time;
     }
@@ -77,9 +71,6 @@ export class GenerateUuidV1Command {
     }
     if (options?.node !== undefined) {
       this.node = options.node;
-    }
-    if (options?.format !== undefined) {
-      this.format = options.format;
     }
   }
 }

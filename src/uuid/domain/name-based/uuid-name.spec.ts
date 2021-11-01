@@ -7,4 +7,8 @@ describe('UuidName', () => {
       Buffer.from('foo'),
     );
   });
+
+  it('must not accept an empty string', () => {
+    expect(() => UuidName.fromString('')).toThrowError('Name cannot be empty');
+  });
 });

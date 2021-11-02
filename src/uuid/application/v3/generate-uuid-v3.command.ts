@@ -45,7 +45,7 @@ export class GenerateUuidV3Command extends GenerateUuidCommand {
    *
    * This can be any sequence of bytes.
    */
-  @MinLength(1)
+  @MinLength(1, { message: 'Name must be provided and not empty' })
   readonly name: string;
 
   constructor(

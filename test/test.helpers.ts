@@ -1,4 +1,5 @@
 import {
+  ErrorResponse,
   UuidFormatMap,
   UuidMethod,
   UuidMock,
@@ -70,3 +71,14 @@ export function getFormatMethod<T extends UuidFormats>(
     .slice(1)
     .toLowerCase()}` as UuidMethod<T>;
 }
+
+export function isErrorResponse(body: unknown): body is ErrorResponse {
+  return (
+    typeof body === 'object' &&
+    body !== null &&
+    'statusCode' in body &&
+    'message' in body
+  );
+}
+
+export const NO_ERROR_RESPONSE_MESSAGE = 'Expected an error response';

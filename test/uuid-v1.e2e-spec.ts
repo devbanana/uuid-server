@@ -1,43 +1,25 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import * as supertest from 'supertest';
-import { UuidModule } from '../src/uuid/uuid.module';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { UuidTime } from '../src/uuid/domain/time-based/uuid-time';
 import { ClockSequence } from '../src/uuid/domain/time-based/clock-sequence';
 import { Node } from '../src/uuid/domain/time-based/node';
-import { getFormatMethod, UuidMethod } from './get-format-method';
 import { UuidFormats } from '../src/uuid/domain/uuid-formats';
-
-interface ErrorResponse {
-  statusCode: string;
-  message: string[];
-}
-
-type UuidMock = {
-  [P in UuidFormats as UuidMethod<P>]: jest.Mock<string>;
-};
+import { ErrorResponse, UuidServiceMock } from './test.types';
+import {
+  closeApp,
+  createMockUuid,
+  createRequest,
+  generateUuids,
+  getFormatMethod,
+  initiateApp,
+} from './test.helpers';
+import { UuidV1 } from '../src/uuid/domain/time-based/uuid-v1';
 
 const uuid = 'aa768af0-2adc-11ec-be43-cfd05c05f21f';
-// noinspection SpellCheckingInspection
-const uuids: Record<UuidFormats, string> = {
-  rfc4122: uuid,
-  base32: '5AET5F0APW27PBWGYFT1E0BWGZ',
-  base58: 'N3sY2tVyFNg6mc8mo2mMhG',
-  base64: 'qnaK8CrcEey+Q8/QXAXyHw==',
-  binary: '\xaa\x76\x8a\xf0\x2a\xdc\x11\xec\xbe\x43\xcf\xd0\x5c\x05\xf2\x1f',
-  number: '226584268313291534147956877654481039903',
-};
+const uuids = generateUuids(UuidV1.fromRfc4122(uuid));
+const mockUuidV1 = createMockUuid(uuids);
 
-const mockUuidV1: UuidMock = {
-  asRfc4122: jest.fn(() => uuids.rfc4122),
-  asBase32: jest.fn(() => uuids.base32),
-  asBase58: jest.fn(() => uuids.base58),
-  asBase64: jest.fn(() => uuids.base64),
-  asBinary: jest.fn(() => uuids.binary),
-  asNumber: jest.fn(() => uuids.number),
-};
-
-const uuidService = {
+const uuidService: UuidServiceMock = {
   generateV1: jest.fn(() => mockUuidV1),
 };
 
@@ -46,20 +28,8 @@ describe('uuid', () => {
   let request: supertest.SuperTest<supertest.Test>;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [UuidModule],
-    })
-      .overrideProvider('UuidServiceInterface')
-      .useValue(uuidService)
-      .compile();
-
-    app = module.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({ transform: true, stopAtFirstError: true }),
-    );
-    await app.init();
-
-    request = supertest(app.getHttpServer());
+    app = await initiateApp(uuidService);
+    request = createRequest(app);
   });
 
   it('should generate a UUID V1', async () => {
@@ -239,7 +209,6 @@ describe('uuid', () => {
   });
 
   afterEach(async () => {
-    await app.close();
-    jest.clearAllMocks();
+    await closeApp(app);
   });
 });

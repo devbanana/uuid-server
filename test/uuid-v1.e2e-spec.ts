@@ -23,7 +23,7 @@ const uuidService: UuidServiceMock = {
   generateV1: jest.fn(() => mockUuidV1),
 };
 
-describe('uuid', () => {
+describe('uuid-v1', () => {
   let app: INestApplication;
   let request: supertest.SuperTest<supertest.Test>;
 

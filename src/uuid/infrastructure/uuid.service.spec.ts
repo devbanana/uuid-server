@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UuidService } from './uuid.service';
-import { validate, version } from 'uuid';
 import { UuidTime } from '../domain/time-based/uuid-time';
 import { ClockSequence } from '../domain/time-based/clock-sequence';
 import { Node } from '../domain/time-based/node';
 import { UuidNamespace } from '../domain/name-based/uuid-namespace';
 import { UuidName } from '../domain/name-based/uuid-name';
+import { Uuid } from '../domain/uuid';
 
 describe('UuidService', () => {
   let provider: UuidService;
@@ -24,10 +24,10 @@ describe('UuidService', () => {
 
   describe('Time-based', () => {
     it('should generate a V1 UUID', () => {
-      const uuid = provider.generateV1().toString();
+      const uuid = provider.generateV1();
 
-      expect(validate(uuid)).toBeTruthy();
-      expect(version(uuid)).toBe(1);
+      expect(Uuid.isValid(uuid.asBuffer())).toBeTruthy();
+      expect(uuid.version).toBe(1);
     });
 
     it('should use the given time', () => {

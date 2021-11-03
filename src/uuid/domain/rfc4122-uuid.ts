@@ -24,11 +24,29 @@ export abstract class Rfc4122Uuid extends Uuid {
     return this.isUuid(uuid) && this.isCorrectVersion(uuid);
   }
 
+  static versionOf(uuid: string | Buffer): number {
+    if (typeof uuid === 'string') {
+      uuid = this.rfc4122ToBuffer(uuid);
+    }
+
+    return this.readVersion(uuid);
+  }
+
   protected static isCorrectVersion(uuid: Buffer): boolean {
     if (this.version === undefined) {
       throw new Error('Version must be defined');
     }
 
-    return (uuid.readUInt8(6) & 0xf0) === this.version << 4;
+    return this.readVersion(uuid) === this.version;
+  }
+
+  private static readVersion(uuid: Buffer): number {
+    return (uuid.readUInt8(6) & 0xf0) >>> 4;
+  }
+
+  get version(): number {
+    const staticThis = this.constructor as typeof Rfc4122Uuid;
+
+    return staticThis.readVersion(this.uuid);
   }
 }

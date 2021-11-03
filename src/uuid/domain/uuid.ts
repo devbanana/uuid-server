@@ -33,18 +33,26 @@ export abstract class Uuid {
     this: UuidConstructor<T>,
     uuid: string,
   ): T {
-    if (!validator.isUUID(uuid)) {
-      throw new Error(`${uuid} is not a valid UUID`);
-    }
-
-    return new this(Buffer.from(uuid.replace(/-/g, ''), 'hex'));
+    return new this(Uuid.rfc4122ToBuffer(uuid));
   }
 
-  static isValid(uuid: Buffer): boolean {
+  static isValid(uuid: string | Buffer): boolean {
+    if (typeof uuid === 'string') {
+      uuid = this.rfc4122ToBuffer(uuid);
+    }
+
     return this.isUuid(uuid);
   }
 
   protected static validate(_uuid: Buffer): void {}
+
+  protected static rfc4122ToBuffer(uuid: string): Buffer {
+    if (!validator.isUUID(uuid)) {
+      throw new Error(`${uuid} is not a valid UUID`);
+    }
+
+    return Buffer.from(uuid.replace(/-/g, ''), 'hex');
+  }
 
   toString(): string {
     return this.asRfc4122();

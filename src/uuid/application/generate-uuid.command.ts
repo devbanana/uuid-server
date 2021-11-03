@@ -9,7 +9,7 @@ export class GenerateUuidCommand {
   @IsEnum(UuidFormats, { message: 'An invalid format was provided' })
   public readonly format?: UuidFormats = UuidFormats.Rfc4122;
 
-  constructor(format: UuidFormats | undefined) {
+  constructor(format?: UuidFormats) {
     if (format !== undefined) {
       this.format = format;
     }

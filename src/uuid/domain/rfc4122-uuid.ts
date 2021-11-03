@@ -20,7 +20,11 @@ export abstract class Rfc4122Uuid extends Uuid {
     }
   }
 
-  static isValid(uuid: Buffer): boolean {
+  static isValid(uuid: string | Buffer): boolean {
+    if (typeof uuid === 'string') {
+      uuid = this.rfc4122ToBuffer(uuid);
+    }
+
     return this.isUuid(uuid) && this.isCorrectVersion(uuid);
   }
 

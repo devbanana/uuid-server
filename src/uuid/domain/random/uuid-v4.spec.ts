@@ -20,4 +20,9 @@ describe('UuidV4', () => {
       UuidV4.fromRfc4122('0cabaa1d-1c4d-5cf5-8938-b56ac03409f4'),
     ).toThrowError('is not a V4 UUID');
   });
+
+  it('can validate a V4 UUID', () => {
+    expect(UuidV4.isValid('3a457c19-cd70-4b38-9d78-5d3ae346ba1e')).toBeTruthy();
+    expect(UuidV4.isValid('18f6a084-3cab-11ec-bf35-736940a9abc7')).toBeFalsy();
+  });
 });

@@ -1,10 +1,10 @@
 import * as supertest from 'supertest';
 import { INestApplication } from '@nestjs/common';
-import { UuidTime } from '../src/uuid/domain/time-based/uuid-time';
-import { ClockSequence } from '../src/uuid/domain/time-based/clock-sequence';
-import { Node } from '../src/uuid/domain/time-based/node';
-import { UuidFormats } from '../src/uuid/domain/uuid-formats';
-import { ErrorResponse, UuidServiceMock } from './test.types';
+import { UuidTime } from '../../src/uuid/domain/time-based/uuid-time';
+import { ClockSequence } from '../../src/uuid/domain/time-based/clock-sequence';
+import { Node } from '../../src/uuid/domain/time-based/node';
+import { UuidFormats } from '../../src/uuid/domain/uuid-formats';
+import { ErrorResponse, UuidServiceMock } from '../utils/test.types';
 import {
   closeApp,
   createMockUuid,
@@ -12,8 +12,8 @@ import {
   generateUuids,
   getFormatMethod,
   initiateApp,
-} from './test.helpers';
-import { UuidV1 } from '../src/uuid/domain/time-based/uuid-v1';
+} from '../utils/test.helpers';
+import { UuidV1 } from '../../src/uuid/domain/time-based/uuid-v1';
 
 const uuid = 'aa768af0-2adc-11ec-be43-cfd05c05f21f';
 const uuids = generateUuids(UuidV1.fromRfc4122(uuid));

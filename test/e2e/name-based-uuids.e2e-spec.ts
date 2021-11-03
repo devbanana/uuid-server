@@ -6,17 +6,17 @@ import {
   initiateApp,
   isErrorResponse,
   NO_ERROR_RESPONSE_MESSAGE,
-} from './test.helpers';
-import { UuidFormatMap, UuidMock } from './test.types';
-import { UuidV3 } from '../src/uuid/domain/name-based/uuid-v3';
+} from '../utils/test.helpers';
+import { UuidFormatMap, UuidMock } from '../utils/test.types';
+import { UuidV3 } from '../../src/uuid/domain/name-based/uuid-v3';
 import { INestApplication } from '@nestjs/common';
 import * as supertest from 'supertest';
-import { UuidNamespace } from '../src/uuid/domain/name-based/uuid-namespace';
-import { UuidName } from '../src/uuid/domain/name-based/uuid-name';
-import { PredefinedNamespaces } from '../src/uuid/domain/name-based/predefined-namespaces';
-import { UuidFormats } from '../src/uuid/domain/uuid-formats';
-import { UuidV5 } from '../src/uuid/domain/name-based/uuid-v5';
-import { UuidServiceInterface } from '../src/uuid/domain/uuid-service.interface';
+import { UuidNamespace } from '../../src/uuid/domain/name-based/uuid-namespace';
+import { UuidName } from '../../src/uuid/domain/name-based/uuid-name';
+import { PredefinedNamespaces } from '../../src/uuid/domain/name-based/predefined-namespaces';
+import { UuidFormats } from '../../src/uuid/domain/uuid-formats';
+import { UuidV5 } from '../../src/uuid/domain/name-based/uuid-v5';
+import { UuidServiceInterface } from '../../src/uuid/domain/uuid-service.interface';
 
 const uuids: Record<3 | 5, UuidFormatMap> = {
   3: generateUuids(UuidV3.fromRfc4122('d4970169-f9a4-31c9-a11b-08609bb119c2')),

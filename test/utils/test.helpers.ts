@@ -6,11 +6,11 @@ import {
   UuidServiceMock,
 } from './test.types';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UuidModule } from '../src/uuid/uuid.module';
+import { UuidModule } from '../../src/uuid/uuid.module';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as supertest from 'supertest';
-import { Uuid } from '../src/uuid/domain/uuid';
-import { UuidFormats } from '../src/uuid/domain/uuid-formats';
+import { Uuid } from '../../src/uuid/domain/uuid';
+import { UuidFormats } from '../../src/uuid/domain/uuid-formats';
 
 export async function initiateApp(
   uuidService: UuidServiceMock,

@@ -1,5 +1,5 @@
-import { UuidServiceInterface } from '../src/uuid/domain/uuid-service.interface';
-import { UuidFormats } from '../src/uuid/domain/uuid-formats';
+import { UuidServiceInterface } from '../../src/uuid/domain/uuid-service.interface';
+import { UuidFormats } from '../../src/uuid/domain/uuid-formats';
 
 export type UuidMethod<T extends UuidFormats> = `as${Capitalize<T>}`;
 export type UuidMock = {

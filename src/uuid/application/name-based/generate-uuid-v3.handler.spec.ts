@@ -8,7 +8,7 @@ import { UuidNamespace } from '../../domain/name-based/uuid-namespace';
 import { UuidName } from '../../domain/name-based/uuid-name';
 import { PredefinedNamespaces } from '../../domain/name-based/predefined-namespaces';
 import { UuidFormats } from '../../domain/uuid-formats';
-import { getFormatMethod } from '../../../../test/test.helpers';
+import { getFormatMethod } from '../../../../test/utils/test.helpers';
 
 describe('GenerateUuidV3Handler', () => {
   const uuid = UuidV3.fromRfc4122('d4970169-f9a4-31c9-a11b-08609bb119c2');

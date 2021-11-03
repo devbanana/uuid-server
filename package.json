@@ -93,7 +93,7 @@
       "reflect-metadata"
     ],
     "setupFilesAfterEnv": [
-      "../test/setup.ts"
+      "<rootDir>/../test/utils/setup.ts"
     ]
   }
 }

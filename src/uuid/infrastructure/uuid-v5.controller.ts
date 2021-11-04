@@ -25,10 +25,10 @@ export class UuidV5Controller {
       ],
     },
   })
-  async generate(
+  generate(
     @Query() command: GenerateUuidV5Command,
   ): Promise<GenerateUuidViewModel> {
-    return await this.commandBus.execute<
+    return this.commandBus.execute<
       GenerateUuidV5Command,
       GenerateUuidViewModel
     >(command);

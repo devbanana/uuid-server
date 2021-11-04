@@ -13,10 +13,10 @@ export class UuidV1Controller {
    * Generate a V1 UUID.
    */
   @Get('generate')
-  async generate(
+  generate(
     @Query() command: GenerateUuidV1Command,
   ): Promise<GenerateUuidViewModel> {
-    return await this.commandBus.execute<
+    return this.commandBus.execute<
       GenerateUuidV1Command,
       GenerateUuidViewModel
     >(command);

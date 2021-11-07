@@ -49,8 +49,6 @@ export abstract class Rfc4122Uuid extends Uuid {
   }
 
   get version(): number {
-    const staticThis = this.constructor as typeof Rfc4122Uuid;
-
-    return staticThis.readVersion(this.uuid);
+    return Rfc4122Uuid.readVersion(this.uuid);
   }
 }

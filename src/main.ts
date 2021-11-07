@@ -5,7 +5,6 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix('api');
   app.useGlobalPipes(
     new ValidationPipe({ transform: true, stopAtFirstError: true }),
   );
@@ -23,7 +22,7 @@ function setupSwagger(app: INestApplication) {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document, {
+  SwaggerModule.setup('docs', app, document, {
     customSiteTitle: 'UUID Server API',
   });
 }

@@ -6,11 +6,10 @@ import { UuidTime } from '../domain/time-based/uuid-time';
 import { ClockSequence } from '../domain/time-based/clock-sequence';
 import { Node } from '../domain/time-based/node';
 import { Buffer } from 'buffer';
-import { createHash, randomBytes } from 'crypto';
+import { createHash } from 'crypto';
 import { UuidNamespace } from '../domain/name-based/uuid-namespace';
 import { UuidName } from '../domain/name-based/uuid-name';
 import { UuidV3 } from '../domain/name-based/uuid-v3';
-import { UuidV4 } from '../domain/random/uuid-v4';
 import { UuidV5 } from '../domain/name-based/uuid-v5';
 
 @Injectable()
@@ -36,23 +35,6 @@ export class UuidService implements UuidServiceInterface {
 
   generateV3(namespace: UuidNamespace, name: UuidName): Promise<UuidV3> {
     return this.createNameBasedUuid(namespace, name, 3);
-  }
-
-  generateV4(): Promise<UuidV4> {
-    return new Promise((resolve, reject) => {
-      randomBytes(16, (err, buffer) => {
-        // istanbul ignore next
-        if (err) {
-          reject(err);
-          return;
-        }
-
-        UuidService.setVersion(buffer, 4);
-        UuidService.setVariant(buffer);
-
-        resolve(UuidV4.fromBuffer(buffer));
-      });
-    });
   }
 
   generateV5(namespace: UuidNamespace, name: UuidName): Promise<UuidV5> {

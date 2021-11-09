@@ -3,24 +3,28 @@ import {
   UuidFormatMap,
   UuidMethod,
   UuidMock,
-  UuidServiceMock,
 } from './test.types';
-import { Test, TestingModule } from '@nestjs/testing';
+import { OverrideBy, Test, TestingModule } from '@nestjs/testing';
 import { UuidModule } from '../../src/uuid/uuid.module';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as supertest from 'supertest';
 import { Uuid } from '../../src/uuid/domain/uuid';
 import { UuidFormats } from '../../src/uuid/domain/uuid-formats';
+import { RandomBytesProvider } from '../../src/uuid/domain/random-bytes.provider';
+import { Buffer } from 'buffer';
 
 export async function initiateApp(
-  uuidService: UuidServiceMock,
+  value: unknown,
+  provider: unknown = 'UuidServiceInterface',
 ): Promise<INestApplication> {
-  const module: TestingModule = await Test.createTestingModule({
+  const builder: OverrideBy = Test.createTestingModule({
     imports: [UuidModule],
-  })
-    .overrideProvider('UuidServiceInterface')
-    .useValue(uuidService)
-    .compile();
+  }).overrideProvider(provider);
+
+  const module: TestingModule = await (typeof provider === 'string'
+    ? builder.useValue(value)
+    : builder.useClass(value)
+  ).compile();
 
   const app: INestApplication = module.createNestApplication();
   app.useGlobalPipes(
@@ -82,3 +86,19 @@ export function isErrorResponse(body: unknown): body is ErrorResponse {
 }
 
 export const NO_ERROR_RESPONSE_MESSAGE = 'Expected an error response';
+
+export class FakeRandomBytesProvider extends RandomBytesProvider {
+  constructor(private data?: Buffer) {
+    super();
+  }
+
+  set bytes(data: Buffer) {
+    this.data = data;
+  }
+
+  generate(_bytes: number): Promise<Buffer> {
+    if (this.data === undefined) throw new Error('Random bytes not set');
+
+    return Promise.resolve(this.data);
+  }
+}

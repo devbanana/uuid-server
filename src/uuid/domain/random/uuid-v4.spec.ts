@@ -1,4 +1,6 @@
 import { UuidV4 } from './uuid-v4';
+import { Buffer } from 'buffer';
+import { FakeRandomBytesProvider } from '../../../../test/utils/test.helpers';
 
 describe('UuidV4', () => {
   // noinspection SpellCheckingInspection
@@ -19,6 +21,20 @@ describe('UuidV4', () => {
     expect(() =>
       UuidV4.fromRfc4122('0cabaa1d-1c4d-5cf5-8938-b56ac03409f4'),
     ).toThrowError('is not a V4 UUID');
+  });
+
+  it('can be created from random data', () => {
+    // noinspection SpellCheckingInspection
+    const randomBytesProvider = new FakeRandomBytesProvider(
+      Buffer.from('5bbba9a5eb047b6e385a297273834c3c', 'hex'),
+    );
+
+    UuidV4.create(randomBytesProvider)
+      .then(uuid => {
+        expect(uuid.asRfc4122()).toBe('5bbba9a5-eb04-4b6e-b85a-297273834c3c');
+        expect(uuid.version).toBe(4);
+      })
+      .catch(() => fail('Failed creating UUID'));
   });
 
   it('can validate a V4 UUID', () => {

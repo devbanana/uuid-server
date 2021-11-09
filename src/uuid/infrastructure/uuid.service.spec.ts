@@ -79,12 +79,4 @@ describe('UuidService', () => {
       expect(result.asRfc4122()).toBe('7b366cbd-391c-5cfb-bb55-cba2db422d0e');
     });
   });
-
-  describe('random', () => {
-    it('should generate a V4 UUID', async () => {
-      const result = await provider.generateV4();
-
-      expect(result.version).toBe(4);
-    });
-  });
 });

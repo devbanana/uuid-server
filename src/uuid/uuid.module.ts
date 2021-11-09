@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { ClassProvider, Module } from '@nestjs/common';
 import { UuidService } from './infrastructure/uuid.service';
 import { CqrsModule } from '@nestjs/cqrs';
 import { UuidV1Controller } from './infrastructure/uuid-v1.controller';
@@ -10,10 +10,17 @@ import { UuidV5Controller } from './infrastructure/uuid-v5.controller';
 import { GenerateUuidV5Handler } from './application/name-based/generate-uuid-v5.handler';
 import { UuidV4Controller } from './infrastructure/uuid-v4.controller';
 import { GenerateUuidV4Handler } from './application/random/generate-uuid-v4.handler';
+import { RandomBytesProvider } from './domain/random-bytes.provider';
+import { CryptoRandomBytesProvider } from './infrastructure/crypto-random-bytes.provider';
 
 const uuidServiceProvider = {
   provide: 'UuidServiceInterface',
   useClass: UuidService,
+};
+
+const randomBytesProvider: ClassProvider<RandomBytesProvider | null> = {
+  provide: RandomBytesProvider,
+  useClass: CryptoRandomBytesProvider,
 };
 
 @Module({
@@ -26,6 +33,7 @@ const uuidServiceProvider = {
   ],
   providers: [
     uuidServiceProvider,
+    randomBytesProvider,
     UuidFormatter,
     GenerateUuidV1Handler,
     GenerateUuidV3Handler,

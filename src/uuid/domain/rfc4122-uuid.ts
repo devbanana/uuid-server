@@ -44,6 +44,14 @@ export abstract class Rfc4122Uuid extends Uuid {
     return this.readVersion(uuid) === this.version;
   }
 
+  protected static setVersion(data: Buffer, version: number): void {
+    data[6] = (data[6] & 0x0f) | (version << 4);
+  }
+
+  protected static setVariant(data: Buffer): void {
+    data[8] = (data[8] & 0x3f) | 0x80;
+  }
+
   private static readVersion(uuid: Buffer): number {
     return (uuid.readUInt8(6) & 0xf0) >>> 4;
   }

@@ -1,6 +1,6 @@
 import { UuidV4 } from './uuid-v4';
 import { Buffer } from 'buffer';
-import { FakeRandomBytesProvider } from '../../../../test/utils/test.helpers';
+import { FakeRandomBytesProvider } from '../../../../test/utils/test.fakes';
 
 describe('UuidV4', () => {
   // noinspection SpellCheckingInspection
@@ -23,18 +23,17 @@ describe('UuidV4', () => {
     ).toThrowError('is not a V4 UUID');
   });
 
-  it('can be created from random data', () => {
+  it('can be created from random data', async () => {
     // noinspection SpellCheckingInspection
     const randomBytesProvider = new FakeRandomBytesProvider(
       Buffer.from('5bbba9a5eb047b6e385a297273834c3c', 'hex'),
     );
+    const spy = jest.spyOn(randomBytesProvider, 'generate');
 
-    UuidV4.create(randomBytesProvider)
-      .then(uuid => {
-        expect(uuid.asRfc4122()).toBe('5bbba9a5-eb04-4b6e-b85a-297273834c3c');
-        expect(uuid.version).toBe(4);
-      })
-      .catch(() => fail('Failed creating UUID'));
+    const uuid = await UuidV4.create(randomBytesProvider);
+    expect(uuid.asRfc4122()).toBe('5bbba9a5-eb04-4b6e-b85a-297273834c3c');
+    expect(uuid.version).toBe(4);
+    expect(spy).toHaveBeenCalledWith(16);
   });
 
   it('can validate a V4 UUID', () => {

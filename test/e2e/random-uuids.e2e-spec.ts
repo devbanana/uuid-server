@@ -1,7 +1,6 @@
 import {
   closeApp,
   createRequest,
-  FakeRandomBytesProvider,
   generateUuids,
   initiateApp,
 } from '../utils/test.helpers';
@@ -10,17 +9,20 @@ import { INestApplication } from '@nestjs/common';
 import supertest from 'supertest';
 import { UuidFormats } from '../../src/uuid/domain/uuid-formats';
 import { RandomBytesProvider } from '../../src/uuid/domain/random-bytes.provider';
+import { FakeRandomBytesProvider } from '../utils/test.fakes';
 
 const uuids = generateUuids(
   UuidV4.fromRfc4122('0af1d462-a62e-42f8-87d8-5b3c04c13800'),
 );
 
-describe('uuid-v4', () => {
+describe('Random UUIDs', () => {
   let app: INestApplication;
   let request: supertest.SuperTest<supertest.Test>;
 
   beforeEach(async () => {
-    app = await initiateApp(FakeRandomBytesProvider, RandomBytesProvider);
+    app = await initiateApp([
+      { provider: RandomBytesProvider, override: FakeRandomBytesProvider },
+    ]);
     request = createRequest(app);
 
     app.get<RandomBytesProvider, FakeRandomBytesProvider>(

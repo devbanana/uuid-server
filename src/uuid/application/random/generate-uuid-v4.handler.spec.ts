@@ -4,11 +4,9 @@ import { UuidFormatter } from '../../domain/uuid-formatter';
 import { UuidV4 } from '../../domain/random/uuid-v4';
 import { GenerateUuidV4Command } from './generate-uuid-v4.command';
 import { UuidFormats } from '../../domain/uuid-formats';
-import {
-  FakeRandomBytesProvider,
-  getFormatMethod,
-} from '../../../../test/utils/test.helpers';
+import { getFormatMethod } from '../../../../test/utils/test.helpers';
 import { RandomBytesProvider } from '../../domain/random-bytes.provider';
+import { FakeRandomBytesProvider } from '../../../../test/utils/test.fakes';
 
 describe('GenerateUuidV4Handler', () => {
   const uuid = UuidV4.fromRfc4122('d3f95d9b-0a28-4cab-932c-66dd719939c1');

@@ -1,13 +1,12 @@
 import {
   closeApp,
-  createMockUuid,
   createRequest,
   generateUuids,
   initiateApp,
   isErrorResponse,
   NO_ERROR_RESPONSE_MESSAGE,
 } from '../utils/test.helpers';
-import { UuidFormatMap, UuidMock } from '../utils/test.types';
+import { UuidFormatMap } from '../utils/test.types';
 import { UuidV3 } from '../../src/uuid/domain/name-based/uuid-v3';
 import { INestApplication } from '@nestjs/common';
 import * as supertest from 'supertest';
@@ -16,28 +15,52 @@ import { UuidName } from '../../src/uuid/domain/name-based/uuid-name';
 import { PredefinedNamespaces } from '../../src/uuid/domain/name-based/predefined-namespaces';
 import { UuidFormats } from '../../src/uuid/domain/uuid-formats';
 import { UuidV5 } from '../../src/uuid/domain/name-based/uuid-v5';
-import { UuidServiceInterface } from '../../src/uuid/domain/uuid-service.interface';
+import { Md5HashProvider } from '../../src/uuid/domain/name-based/md5-hash.provider';
+import { Sha1HashProvider } from '../../src/uuid/domain/name-based/sha1-hash.provider';
+import { HashProvider } from '../../src/uuid/domain/name-based/hash.provider';
+import { FakeMd5HashProvider, FakeSha1HashProvider } from '../utils/test.fakes';
+import { Buffer } from 'buffer';
+
+type HashSpy = jest.SpyInstance<
+  ReturnType<HashProvider['hash']>,
+  jest.ArgsType<HashProvider['hash']>
+>;
 
 const uuids: Record<3 | 5, UuidFormatMap> = {
   3: generateUuids(UuidV3.fromRfc4122('d4970169-f9a4-31c9-a11b-08609bb119c2')),
   5: generateUuids(UuidV5.fromRfc4122('0cabaa1d-1c4d-5cf5-8938-b56ac03409f4')),
 };
 
-const uuidService: Record<
-  keyof Pick<UuidServiceInterface, 'generateV3' | 'generateV5'>,
-  jest.Mock<UuidMock>
-> = {
-  generateV3: jest.fn(() => createMockUuid(uuids[3])),
-  generateV5: jest.fn(() => createMockUuid(uuids[5])),
-};
-
-describe('UuidV3', () => {
+describe('Name-based UUIDs', () => {
   let app: INestApplication;
   let request: supertest.SuperTest<supertest.Test>;
+  let spies: Record<3 | 5, HashSpy>;
 
   beforeEach(async () => {
-    app = await initiateApp(uuidService);
+    app = await initiateApp([
+      { provider: Md5HashProvider, override: FakeMd5HashProvider },
+      { provider: Sha1HashProvider, override: FakeSha1HashProvider },
+    ]);
     request = createRequest(app);
+
+    const md5Provider = app.get<Md5HashProvider, FakeMd5HashProvider>(
+      Md5HashProvider,
+    );
+    const sha1Provider = app.get<Sha1HashProvider, FakeSha1HashProvider>(
+      Sha1HashProvider,
+    );
+
+    md5Provider.data = Buffer.from('d4970169f9a4c1c9611b08609bb119c2', 'hex');
+    // noinspection SpellCheckingInspection
+    sha1Provider.data = Buffer.from(
+      '0cabaa1d1c4dacf54938b56ac03409f429b1076e',
+      'hex',
+    );
+
+    spies = {
+      '3': jest.spyOn(md5Provider, 'hash'),
+      '5': jest.spyOn(sha1Provider, 'hash'),
+    };
   });
 
   describe.each`
@@ -45,7 +68,11 @@ describe('UuidV3', () => {
     ${3}
     ${5}
   `('version $version', ({ version }: { version: 3 | 5 }) => {
-    const mock: jest.Mock<UuidMock> = uuidService[`generateV${version}`];
+    let spy: HashSpy;
+
+    beforeEach(() => {
+      spy = spies[version];
+    });
 
     it(`generates a V${version} UUID`, async () => {
       const namespace = `e9cd4085-931c-4581-a174-eeb825a1de8d`;
@@ -54,10 +81,12 @@ describe('UuidV3', () => {
         .get(`/uuid/v${version}/generate?namespace=${namespace}&name=${name}`)
         .expect(200);
 
-      expect(mock).toHaveBeenCalledTimes(1);
-      expect(mock).toHaveBeenCalledWith(
-        UuidNamespace.fromRfc4122(namespace),
-        UuidName.fromString(name),
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(
+        Buffer.concat([
+          UuidNamespace.fromRfc4122(namespace).asBuffer(),
+          UuidName.fromString(name).asBuffer(),
+        ]),
       );
     });
 
@@ -80,10 +109,12 @@ describe('UuidV3', () => {
           .get(`/uuid/v${version}/generate?namespace=${namespace}&name=${name}`)
           .expect(200);
 
-        expect(mock).toHaveBeenCalledTimes(1);
-        expect(mock).toHaveBeenCalledWith(
-          UuidNamespace.fromPredefined(namespace),
-          UuidName.fromString(name),
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(spy).toHaveBeenCalledWith(
+          Buffer.concat([
+            UuidNamespace.fromPredefined(namespace).asBuffer(),
+            UuidName.fromString(name).asBuffer(),
+          ]),
         );
       },
     );

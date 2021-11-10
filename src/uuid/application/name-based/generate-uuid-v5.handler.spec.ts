@@ -1,5 +1,4 @@
 import { UuidV5 } from '../../domain/name-based/uuid-v5';
-import { UuidServiceInterface } from '../../domain/uuid-service.interface';
 import { Test, TestingModule } from '@nestjs/testing';
 import { GenerateUuidV5Handler } from './generate-uuid-v5.handler';
 import { UuidFormatter } from '../../domain/uuid-formatter';
@@ -9,16 +8,15 @@ import { UuidName } from '../../domain/name-based/uuid-name';
 import { GenerateUuidV5Command } from './generate-uuid-v5.command';
 import { UuidFormats } from '../../domain/uuid-formats';
 import { getFormatMethod } from '../../../../test/utils/test.helpers';
+import { Sha1HashProvider } from '../../domain/name-based/sha1-hash.provider';
+import { FakeSha1HashProvider } from '../../../../test/utils/test.fakes';
 
 describe('GenerateUuidV5Handler', () => {
   const uuid = UuidV5.fromRfc4122('0cabaa1d-1c4d-5cf5-8938-b56ac03409f4');
-  const mockService: Record<
-    keyof Pick<UuidServiceInterface, 'generateV5'>,
-    jest.Mock<UuidV5>
-  > = {
-    generateV5: jest.fn(() => uuid),
-  };
-
+  let spy: jest.SpyInstance<
+    ReturnType<Sha1HashProvider['hash']>,
+    jest.ArgsType<Sha1HashProvider['hash']>
+  >;
   let handler: GenerateUuidV5Handler;
 
   beforeEach(async () => {
@@ -26,24 +24,33 @@ describe('GenerateUuidV5Handler', () => {
       providers: [
         GenerateUuidV5Handler,
         UuidFormatter,
-        {
-          provide: 'UuidServiceInterface',
-          useValue: mockService,
-        },
+        { provide: Sha1HashProvider, useClass: FakeSha1HashProvider },
       ],
     }).compile();
 
     handler = module.get<GenerateUuidV5Handler>(GenerateUuidV5Handler);
+    const provider = module.get<Sha1HashProvider, FakeSha1HashProvider>(
+      Sha1HashProvider,
+    );
+
+    // noinspection SpellCheckingInspection
+    provider.data = Buffer.from(
+      '0cabaa1d1c4dacf54938b56ac03409f429b1076e',
+      'hex',
+    );
+    spy = jest.spyOn(provider, 'hash');
   });
 
-  it('passes the namespace and name to the UUID service', async () => {
+  it('passes the namespace and name', async () => {
     await handler.execute(
       new GenerateUuidV5Command(PredefinedNamespaces.Dns, 'devbanana.me'),
     );
 
-    expect(mockService.generateV5).toHaveBeenCalledWith(
-      UuidNamespace.fromPredefined(PredefinedNamespaces.Dns),
-      UuidName.fromString('devbanana.me'),
+    expect(spy).toHaveBeenCalledWith(
+      Buffer.concat([
+        UuidNamespace.fromPredefined(PredefinedNamespaces.Dns).asBuffer(),
+        UuidName.fromString('devbanana.me').asBuffer(),
+      ]),
     );
   });
 
@@ -51,9 +58,11 @@ describe('GenerateUuidV5Handler', () => {
     const namespace = '016f0f4d-744d-4cec-9369-c558a5f22da8';
     await handler.execute(new GenerateUuidV5Command(namespace, 'foo'));
 
-    expect(mockService.generateV5).toHaveBeenCalledWith(
-      UuidNamespace.fromRfc4122(namespace),
-      UuidName.fromString('foo'),
+    expect(spy).toHaveBeenCalledWith(
+      Buffer.concat([
+        UuidNamespace.fromRfc4122(namespace).asBuffer(),
+        UuidName.fromString('foo').asBuffer(),
+      ]),
     );
   });
 
@@ -80,6 +89,6 @@ describe('GenerateUuidV5Handler', () => {
   );
 
   afterEach(() => {
-    mockService.generateV5.mockClear();
+    spy.mockClear();
   });
 });

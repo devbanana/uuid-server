@@ -28,7 +28,9 @@ describe('uuid-v1', () => {
   let request: supertest.SuperTest<supertest.Test>;
 
   beforeEach(async () => {
-    app = await initiateApp(uuidService);
+    app = await initiateApp([
+      { provider: 'UuidServiceInterface', override: uuidService },
+    ]);
     request = createRequest(app);
   });
 

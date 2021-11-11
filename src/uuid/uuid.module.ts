@@ -1,5 +1,4 @@
 import { ClassProvider, Module } from '@nestjs/common';
-import { UuidService } from './infrastructure/uuid.service';
 import { CqrsModule } from '@nestjs/cqrs';
 import { UuidV1Controller } from './infrastructure/uuid-v1.controller';
 import { GenerateUuidV1Handler } from './application/time-based/generate-uuid-v1.handler';
@@ -16,11 +15,6 @@ import { Md5HashProvider } from './domain/name-based/md5-hash.provider';
 import { CryptoMd5HashProvider } from './infrastructure/crypto-md5-hash.provider';
 import { Sha1HashProvider } from './domain/name-based/sha1-hash.provider';
 import { CryptoSha1HashProvider } from './infrastructure/crypto-sha1-hash.provider';
-
-const uuidServiceProvider = {
-  provide: 'UuidServiceInterface',
-  useClass: UuidService,
-};
 
 const randomBytesProvider: ClassProvider<RandomBytesProvider> = {
   provide: RandomBytesProvider,
@@ -47,7 +41,6 @@ const sha1HashProvider: ClassProvider<Sha1HashProvider> = {
   ],
   providers: [
     UuidFormatter,
-    uuidServiceProvider,
     randomBytesProvider,
     md5HashProvider,
     sha1HashProvider,

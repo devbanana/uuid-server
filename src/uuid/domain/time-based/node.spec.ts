@@ -1,4 +1,5 @@
 import { Node } from './node';
+import { Buffer } from 'buffer';
 
 describe('Node', () => {
   it('should be defined', () => {
@@ -11,50 +12,40 @@ describe('Node', () => {
     );
   });
 
-  it('can be converted to a byte array', () => {
-    expect(Node.fromString('34:F7:17:63:76:07').asByteArray()).toStrictEqual(
-      new Uint8Array([0x34, 0xf7, 0x17, 0x63, 0x76, 0x07]),
+  it('can be converted to a number', () => {
+    expect(Node.fromString('34:F7:17:63:76:07').asNumber()).toBe(
+      58_235_853_960_711,
     );
   });
 
   // noinspection SpellCheckingInspection
-  describe.each`
-    format            | macAddress             | hexString
-    ${'with colons'}  | ${'92:5F:CF:BE:F9:98'} | ${'925fcfbef998'}
-    ${'with hyphens'} | ${'16-50-2F-F3-DB-1A'} | ${'16502ff3db1a'}
-    ${'with dots'}    | ${'8071.8D6A.DCB1'}    | ${'80718d6adcb1'}
-    ${'with zeros'}   | ${'00:E8:35:98:61:87'} | ${'00e835986187'}
+  it.each`
+    format       | macAddress             | hexString
+    ${'colons'}  | ${'92:5F:CF:BE:F9:98'} | ${'925fcfbef998'}
+    ${'hyphens'} | ${'16-50-2F-F3-DB-1A'} | ${'16502ff3db1a'}
+    ${'dots'}    | ${'8071.8D6A.DCB1'}    | ${'80718d6adcb1'}
+    ${'zeros'}   | ${'00:E8:35:98:61:87'} | ${'00e835986187'}
   `(
-    '$format',
+    'can accept a node ID with $format',
     ({ macAddress, hexString }: { macAddress: string; hexString: string }) => {
-      it('can be converted to a hex string', () => {
-        expect(Node.fromString(macAddress).asHexString()).toBe(hexString);
-      });
-
-      it('should be 48 bits', () => {
-        expect(Node.fromString(macAddress).asHexString()).toHaveLength(12);
-      });
+      expect(Node.fromString(macAddress)).toStrictEqual(
+        Node.fromBuffer(Buffer.from(hexString, 'hex')),
+      );
     },
   );
 
-  describe('from hex string', () => {
-    it('can be turned back into a hex string', () => {
+  describe('from buffer', () => {
+    it('can be accepted', () => {
       // noinspection SpellCheckingInspection
-      expect(Node.fromHexString('618feabe756a').asHexString()).toBe(
-        '618feabe756a',
+      expect(Node.fromBuffer(Buffer.from('618feabe756a', 'hex'))).toStrictEqual(
+        Node.fromString('61:8f:ea:be:75:6a'),
       );
     });
 
     it('must be 48 bits', () => {
-      expect(() => Node.fromHexString('4C54980D1A')).toThrowError(
-        /Hex string must be 48 bits/,
-      );
-    });
-
-    it('must be a valid hex string', () => {
-      expect(() => Node.fromHexString('foo')).toThrowError(
-        /Invalid hex string provided/,
-      );
+      expect(() =>
+        Node.fromBuffer(Buffer.from('4C54980D1A', 'hex')),
+      ).toThrowError('Node ID must be 48 bits');
     });
   });
 });

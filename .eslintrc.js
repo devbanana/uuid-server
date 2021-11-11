@@ -19,5 +19,6 @@ module.exports = {
   rules: {
     '@typescript-eslint/no-empty-function': ['warn', { allow: ['methods'] }],
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    '@typescript-eslint/no-non-null-assertion': 'off',
   },
 };

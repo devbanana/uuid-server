@@ -25,9 +25,9 @@ describe('Random UUIDs', () => {
     ]);
     request = createRequest(app);
 
-    app.get<RandomBytesProvider, FakeRandomBytesProvider>(
-      RandomBytesProvider,
-    ).bytes = Buffer.from('0af1d462a62e52f8c7d85b3c04c13800', 'hex');
+    app
+      .get<RandomBytesProvider, FakeRandomBytesProvider>(RandomBytesProvider)
+      .addRandomValue(Buffer.from('0af1d462a62e52f8c7d85b3c04c13800', 'hex'));
   });
 
   it('generates a V4 UUID', async () => {

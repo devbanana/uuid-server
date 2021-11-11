@@ -3,20 +3,25 @@ import { Buffer } from 'buffer';
 import { RandomBytesProvider } from '../../src/uuid/domain/random-bytes.provider';
 import { HashProvider } from '../../src/uuid/domain/name-based/hash.provider';
 import { Sha1HashProvider } from '../../src/uuid/domain/name-based/sha1-hash.provider';
+import { UuidV1Repository } from '../../src/uuid/domain/time-based/uuid-v1.repository';
+import { UuidV1 } from '../../src/uuid/domain/time-based/uuid-v1';
 
 export class FakeRandomBytesProvider extends RandomBytesProvider {
-  constructor(private data?: Buffer) {
+  private randomValues: Buffer[] = [];
+
+  constructor(...data: Buffer[]) {
     super();
+    this.randomValues.concat(data);
   }
 
-  set bytes(data: Buffer) {
-    this.data = data;
+  addRandomValue(data: Buffer) {
+    this.randomValues.push(data);
   }
 
   generate(_bytes: number): Promise<Buffer> {
-    if (this.data === undefined) throw new Error('Random bytes not set');
+    if (this.randomValues.length === 0) throw new Error('Random bytes not set');
 
-    return Promise.resolve(this.data);
+    return Promise.resolve(this.randomValues.shift()!);
   }
 }
 

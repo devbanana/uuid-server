@@ -22,9 +22,9 @@ describe('GenerateUuidV4Handler', () => {
     }).compile();
 
     handler = module.get<GenerateUuidV4Handler>(GenerateUuidV4Handler);
-    module.get<RandomBytesProvider, FakeRandomBytesProvider>(
-      RandomBytesProvider,
-    ).bytes = Buffer.from('d3f95d9b0a289cab132c66dd719939c1', 'hex');
+    module
+      .get<RandomBytesProvider, FakeRandomBytesProvider>(RandomBytesProvider)
+      .addRandomValue(Buffer.from('d3f95d9b0a289cab132c66dd719939c1', 'hex'));
   });
 
   it('does not require any parameters', async () => {

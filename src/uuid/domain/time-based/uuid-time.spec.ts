@@ -22,6 +22,51 @@ describe('UuidTime', () => {
     );
   });
 
+  it('can include nanoseconds', () => {
+    const time = UuidTime.fromMilliseconds(
+      1000 * 60 * 60 * 24,
+    ).withAddedNanoseconds(100);
+
+    expect(time.asNanosecondsSinceGregorianStart()).toBe(
+      86_400_000_000_100n - BigInt(gregorianStart) * 1_000_000n,
+    );
+  });
+
+  it('must be in 100 nanosecond intervals', () => {
+    expect(() =>
+      UuidTime.fromMilliseconds(1000 * 60 * 60 * 24).withAddedNanoseconds(99),
+    ).toThrowError('Nanoseconds must be a multiple of 100');
+  });
+
+  it('cannot have nanoseconds greater than 1,000,000', () => {
+    expect(() =>
+      UuidTime.fromMilliseconds(1000 * 60 * 60 * 24).withAddedNanoseconds(
+        1000000000,
+      ),
+    ).toThrowError('Nanoseconds must be less than 1,000,000');
+  });
+
+  it('cannot accept nanoseconds less than 0', () => {
+    expect(() =>
+      UuidTime.fromMilliseconds(1000 * 60 * 60 * 24).withAddedNanoseconds(-100),
+    ).toThrowError('Nanoseconds cannot be negative');
+  });
+
+  it('can be converted to nanoseconds since gregorian start', () => {
+    expect(
+      UuidTime.fromMilliseconds(
+        1000 * 60 * 60 * 24 * 365,
+      ).asNanosecondsSinceGregorianStart(),
+    ).toBe(12_250_828_800_000_000_000n);
+  });
+
+  it('can get the nanoseconds component', () => {
+    expect(
+      UuidTime.fromMilliseconds(1000 * 60 * 60 * 24).withAddedNanoseconds(500)
+        .ns,
+    ).toBe(500);
+  });
+
   describe.each`
     type              | minDate                   | maxDate
     ${'date string'}  | ${'1582-10-15T00:00:00Z'} | ${'5236-03-31T21:21:00.683Z'}

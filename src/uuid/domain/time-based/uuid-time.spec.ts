@@ -7,7 +7,7 @@ describe('UuidTime', () => {
 
   it('should accept a valid time', () => {
     const time = UuidTime.fromString('2021-10-12T00:00:00Z');
-    expect(time.asMilliseconds()).toBe(1_633_996_800_000);
+    expect(time.ms).toBe(1_633_996_800_000 - gregorianStart);
   });
 
   it('should not accept an invalid time', () => {
@@ -17,8 +17,8 @@ describe('UuidTime', () => {
   });
 
   it('can accept milliseconds', () => {
-    expect(UuidTime.fromMilliseconds(1_634_451_225_740).asMilliseconds()).toBe(
-      1_634_451_225_740,
+    expect(UuidTime.fromMilliseconds(1_634_451_225_740).ms).toBe(
+      1_634_451_225_740 - gregorianStart,
     );
   });
 
@@ -27,7 +27,7 @@ describe('UuidTime', () => {
       1000 * 60 * 60 * 24,
     ).withAddedNanoseconds(100);
 
-    expect(time.asNanosecondsSinceGregorianStart()).toBe(
+    expect(time.ns).toBe(
       86_400_000_000_100n - BigInt(gregorianStart) * 1_000_000n,
     );
   });
@@ -53,18 +53,39 @@ describe('UuidTime', () => {
   });
 
   it('can be converted to nanoseconds since gregorian start', () => {
-    expect(
-      UuidTime.fromMilliseconds(
-        1000 * 60 * 60 * 24 * 365,
-      ).asNanosecondsSinceGregorianStart(),
-    ).toBe(12_250_828_800_000_000_000n);
+    expect(UuidTime.fromMilliseconds(1000 * 60 * 60 * 24 * 365).ns).toBe(
+      12_250_828_800_000_000_000n,
+    );
   });
 
   it('can get the nanoseconds component', () => {
     expect(
       UuidTime.fromMilliseconds(1000 * 60 * 60 * 24).withAddedNanoseconds(500)
-        .ns,
+        .nsOffset,
     ).toBe(500);
+  });
+
+  it('can compare another time', () => {
+    const today = new Date('2021-11-11T00:00:00Z').getTime();
+    const time = UuidTime.fromMilliseconds(today);
+
+    expect(time.compare(UuidTime.fromMilliseconds(today))).toBe(0);
+    expect(time.compare(UuidTime.fromMilliseconds(today + 1))).toBe(-1);
+    expect(time.compare(UuidTime.fromMilliseconds(today - 1))).toBe(1);
+  });
+
+  it('can compare another time with nanosecond precision', () => {
+    const today = new Date('2021-11-11T00:00:00Z').getTime();
+    const time = UuidTime.fromMilliseconds(today);
+
+    expect(
+      time.compare(UuidTime.fromMilliseconds(today).withAddedNanoseconds(100)),
+    ).toBe(-1);
+    expect(
+      time.compare(
+        UuidTime.fromMilliseconds(today - 1).withAddedNanoseconds(999900),
+      ),
+    ).toBe(1);
   });
 
   describe.each`

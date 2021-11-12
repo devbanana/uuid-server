@@ -2,6 +2,7 @@ import { UuidV1 } from './uuid-v1';
 import { UuidTime } from './uuid-time';
 import { Node } from './node';
 import { Buffer } from 'buffer';
+import { ClockSequence } from './clock-sequence';
 
 describe('UuidV1', () => {
   const uuid = 'ced717a0-2ab6-11ec-bce4-bf507cc82961';
@@ -11,8 +12,14 @@ describe('UuidV1', () => {
     uuidV1 = UuidV1.fromRfc4122(uuid);
   });
 
-  it('should be defined', () => {
-    expect(uuidV1).toBeDefined();
+  it('should create the UUID from its fields', () => {
+    const uuid = UuidV1.create(
+      UuidTime.fromString('2021-11-11T00:00:00Z'),
+      ClockSequence.fromNumber(0x294b),
+      Node.fromString('31:4f:8c:75:fc:32'),
+    );
+
+    expect(uuid.asRfc4122()).toBe('502dc000-4282-11ec-a94b-314f8c75fc32');
   });
 
   it('should get the UUID as a string', () => {
@@ -105,6 +112,16 @@ describe('UuidV1', () => {
   it("should extract the UUID's time", () => {
     expect(uuidV1.time).toStrictEqual(
       UuidTime.fromString('2021-10-11T17:15:18.426Z'),
+    );
+  });
+
+  it("should extract the UUID's time when including nanoseconds", () => {
+    expect(
+      UuidV1.fromRfc4122('ced71868-2ab6-11ec-bce4-bf507cc82961').time,
+    ).toStrictEqual(
+      UuidTime.fromString('2021-10-11T17:15:18.426Z').withAddedNanoseconds(
+        20000,
+      ),
     );
   });
 

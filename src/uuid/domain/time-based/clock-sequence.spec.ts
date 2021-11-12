@@ -20,4 +20,14 @@ describe('ClockSequence', () => {
       /Clock sequence cannot be greater than 0x3FFF/,
     );
   });
+
+  it('can be incremented', () => {
+    expect(ClockSequence.fromNumber(0x1753).increment().asNumber()).toBe(
+      0x1754,
+    );
+  });
+
+  it('increments back to 0 if 0x3fff', () => {
+    expect(ClockSequence.fromNumber(0x3fff).increment().asNumber()).toBe(0);
+  });
 });

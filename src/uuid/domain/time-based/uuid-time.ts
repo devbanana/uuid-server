@@ -48,18 +48,19 @@ export class UuidTime {
     return new UuidTime(this.time, ns);
   }
 
-  asMilliseconds(): number {
-    return this.time.getTime();
+  get ms(): number {
+    return this.time.getTime() - gregorianStart;
   }
 
-  asNanosecondsSinceGregorianStart(): bigint {
-    return (
-      (BigInt(this.asMilliseconds()) - BigInt(gregorianStart)) * 1_000_000n +
-      BigInt(this.nanoseconds)
-    );
+  get ns(): bigint {
+    return BigInt(this.ms) * 1_000_000n + BigInt(this.nsOffset);
   }
 
-  get ns(): number {
+  get nsOffset(): number {
     return this.nanoseconds;
+  }
+
+  compare(time: UuidTime): -1 | 0 | 1 {
+    return this.ns < time.ns ? -1 : this.ns > time.ns ? 1 : 0;
   }
 }

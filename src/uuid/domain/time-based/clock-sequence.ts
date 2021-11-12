@@ -16,4 +16,10 @@ export class ClockSequence {
   asNumber(): number {
     return this.clockSeq;
   }
+
+  increment(): ClockSequence {
+    return ClockSequence.fromNumber(
+      this.clockSeq === 0x3fff ? 0 : this.clockSeq + 1,
+    );
+  }
 }

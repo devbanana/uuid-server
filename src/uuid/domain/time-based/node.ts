@@ -23,4 +23,11 @@ export class Node {
   asNumber(): number {
     return this.node;
   }
+
+  asBuffer(): Buffer {
+    const buffer = Buffer.alloc(6);
+    buffer.writeUIntBE(this.node, 0, 6);
+
+    return buffer;
+  }
 }

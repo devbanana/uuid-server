@@ -18,6 +18,12 @@ describe('Node', () => {
     );
   });
 
+  it('can be converted to a buffer', () => {
+    expect(Node.fromString('c0:84:b2:af:83:1f').asBuffer()).toStrictEqual(
+      Buffer.from('c084b2af831f', 'hex'),
+    );
+  });
+
   // noinspection SpellCheckingInspection
   it.each`
     format       | macAddress             | hexString

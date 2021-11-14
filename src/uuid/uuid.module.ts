@@ -1,13 +1,13 @@
 import { ClassProvider, Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { UuidV1Controller } from './infrastructure/uuid-v1.controller';
+import { UuidV1Controller } from './infrastructure/controllers/uuid-v1.controller';
 import { GenerateUuidV1Handler } from './application/time-based/generate-uuid-v1.handler';
 import { UuidFormatter } from './domain/uuid-formatter';
-import { UuidV3Controller } from './infrastructure/uuid-v3.controller';
+import { UuidV3Controller } from './infrastructure/controllers/uuid-v3.controller';
 import { GenerateUuidV3Handler } from './application/name-based/generate-uuid-v3.handler';
-import { UuidV5Controller } from './infrastructure/uuid-v5.controller';
+import { UuidV5Controller } from './infrastructure/controllers/uuid-v5.controller';
 import { GenerateUuidV5Handler } from './application/name-based/generate-uuid-v5.handler';
-import { UuidV4Controller } from './infrastructure/uuid-v4.controller';
+import { UuidV4Controller } from './infrastructure/controllers/uuid-v4.controller';
 import { GenerateUuidV4Handler } from './application/random/generate-uuid-v4.handler';
 import { RandomBytesProvider } from './domain/random-bytes.provider';
 import { CryptoRandomBytesProvider } from './infrastructure/crypto/crypto-random-bytes.provider';

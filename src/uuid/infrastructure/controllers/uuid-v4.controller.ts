@@ -1,8 +1,8 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
-import { GenerateUuidV4Command } from '../application/random/generate-uuid-v4.command';
-import { GenerateUuidViewModel } from '../application/generate-uuid.view-model';
+import { GenerateUuidV4Command } from '../../application/random/generate-uuid-v4.command';
+import { GenerateUuidViewModel } from '../../application/generate-uuid.view-model';
 
 @Controller('uuid/v4')
 @ApiTags('uuid-v4')

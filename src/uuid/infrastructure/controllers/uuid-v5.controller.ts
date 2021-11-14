@@ -1,8 +1,8 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
-import { GenerateUuidV5Command } from '../application/name-based/generate-uuid-v5.command';
-import { GenerateUuidViewModel } from '../application/generate-uuid.view-model';
+import { GenerateUuidV5Command } from '../../application/name-based/generate-uuid-v5.command';
+import { GenerateUuidViewModel } from '../../application/generate-uuid.view-model';
 
 @Controller('uuid/v5')
 @ApiTags('uuid-v5')

@@ -2,10 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MongoUuidV1Repository, UuidSchema } from './mongo-uuid-v1.repository';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseConnection } from './database.connection';
-import { Node } from '../domain/time-based/node';
-import { UuidTime } from '../domain/time-based/uuid-time';
-import { UuidV1 } from '../domain/time-based/uuid-v1';
-import { ClockSequence } from '../domain/time-based/clock-sequence';
+import { Node } from '../../domain/time-based/node';
+import { UuidTime } from '../../domain/time-based/uuid-time';
+import { UuidV1 } from '../../domain/time-based/uuid-v1';
+import { ClockSequence } from '../../domain/time-based/clock-sequence';
 import { InsertOneResult } from 'mongodb';
 
 const nodes: Node[] = [

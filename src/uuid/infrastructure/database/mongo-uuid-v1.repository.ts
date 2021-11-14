@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseConnection } from './database.connection';
-import { UuidV1Repository } from '../domain/time-based/uuid-v1.repository';
-import { Node } from '../domain/time-based/node';
-import { UuidV1 } from '../domain/time-based/uuid-v1';
-import { UuidTime } from '../domain/time-based/uuid-time';
+import { UuidV1Repository } from '../../domain/time-based/uuid-v1.repository';
+import { Node } from '../../domain/time-based/node';
+import { UuidV1 } from '../../domain/time-based/uuid-v1';
+import { UuidTime } from '../../domain/time-based/uuid-time';
 import { Collection, Document } from 'mongodb';
-import { ClockSequence } from '../domain/time-based/clock-sequence';
+import { ClockSequence } from '../../domain/time-based/clock-sequence';
 import { OnEvent } from '@nestjs/event-emitter';
 
 export interface UuidSchema extends Document {

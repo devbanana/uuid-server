@@ -4,22 +4,14 @@ import { UuidV1Repository } from '../../domain/time-based/uuid-v1.repository';
 import { Node } from '../../domain/time-based/node';
 import { UuidV1 } from '../../domain/time-based/uuid-v1';
 import { UuidTime } from '../../domain/time-based/uuid-time';
-import { Collection, Document } from 'mongodb';
+import { Collection } from 'mongodb';
 import { ClockSequence } from '../../domain/time-based/clock-sequence';
 import { OnEvent } from '@nestjs/event-emitter';
-
-export interface UuidSchema extends Document {
-  type: string;
-  version: number;
-  date: Date;
-  nsOffset: number;
-  clockSequence: number;
-  node: number;
-}
+import { UuidV1Schema } from './schemas/uuid-v1.schema';
 
 @Injectable()
 export class MongoUuidV1Repository implements UuidV1Repository {
-  private uuids: Collection<UuidSchema>;
+  private uuids: Collection<UuidV1Schema>;
 
   constructor(private connection: DatabaseConnection) {
     this.uuids = connection.db.collection('uuids');
@@ -41,7 +33,7 @@ export class MongoUuidV1Repository implements UuidV1Repository {
 
   async getLastCreatedUuidByNode(node: Node): Promise<UuidV1 | undefined> {
     const result = await this.uuids
-      .aggregate<UuidSchema>([
+      .aggregate<UuidV1Schema>([
         { $match: { version: 1, node: node.asNumber() } },
         { $sort: { _id: -1 } },
       ])
@@ -60,7 +52,7 @@ export class MongoUuidV1Repository implements UuidV1Repository {
     node: Node,
   ): Promise<UuidV1 | undefined> {
     const result = await this.uuids
-      .aggregate<UuidSchema>([
+      .aggregate<UuidV1Schema>([
         { $match: { version: 1, date: time.date, node: node.asNumber() } },
         { $sort: { nsOffset: -1 } },
       ])
@@ -74,7 +66,7 @@ export class MongoUuidV1Repository implements UuidV1Repository {
     return MongoUuidV1Repository.createUuidFromSchema(result);
   }
 
-  private static createUuidFromSchema(result: UuidSchema): UuidV1 {
+  private static createUuidFromSchema(result: UuidV1Schema): UuidV1 {
     return UuidV1.create(
       UuidTime.fromDate(result.date).withAddedNanoseconds(result.nsOffset),
       ClockSequence.fromNumber(result.clockSequence),

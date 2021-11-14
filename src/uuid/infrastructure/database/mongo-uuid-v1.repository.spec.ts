@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoUuidV1Repository, UuidSchema } from './mongo-uuid-v1.repository';
+import { MongoUuidV1Repository } from './mongo-uuid-v1.repository';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseConnection } from './database.connection';
 import { Node } from '../../domain/time-based/node';
@@ -7,6 +7,7 @@ import { UuidTime } from '../../domain/time-based/uuid-time';
 import { UuidV1 } from '../../domain/time-based/uuid-v1';
 import { ClockSequence } from '../../domain/time-based/clock-sequence';
 import { InsertOneResult } from 'mongodb';
+import { UuidV1Schema } from './schemas/uuid-v1.schema';
 
 const nodes: Node[] = [
   Node.fromString('0d:5e:ac:59:9e:b6'),
@@ -105,12 +106,14 @@ describe('MysqlUuidV1Repository', () => {
 
     await provider.save(uuid);
 
-    const result = await connection.db.collection<UuidSchema>('uuids').findOne({
-      date: new Date(now + 6),
-      nsOffset: 0,
-      clockSequence: sequences[1].increment().asNumber(),
-      node: nodes[1].asNumber(),
-    });
+    const result = await connection.db
+      .collection<UuidV1Schema>('uuids')
+      .findOne({
+        date: new Date(now + 6),
+        nsOffset: 0,
+        clockSequence: sequences[1].increment().asNumber(),
+        node: nodes[1].asNumber(),
+      });
 
     expect(result).not.toBeNull();
   });

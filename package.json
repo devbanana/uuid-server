@@ -35,6 +35,8 @@
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
     "crockford-base32": "^1.0.1",
+    "joi": "^17.4.2",
+    "mongodb": "^4.1.4",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",

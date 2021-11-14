@@ -15,6 +15,8 @@ import { Md5HashProvider } from './domain/name-based/md5-hash.provider';
 import { CryptoMd5HashProvider } from './infrastructure/crypto-md5-hash.provider';
 import { Sha1HashProvider } from './domain/name-based/sha1-hash.provider';
 import { CryptoSha1HashProvider } from './infrastructure/crypto-sha1-hash.provider';
+import { DatabaseConnection } from './infrastructure/database.connection';
+import { ConfigModule } from '@nestjs/config';
 
 const randomBytesProvider: ClassProvider<RandomBytesProvider> = {
   provide: RandomBytesProvider,
@@ -32,7 +34,7 @@ const sha1HashProvider: ClassProvider<Sha1HashProvider> = {
 };
 
 @Module({
-  imports: [CqrsModule],
+  imports: [CqrsModule, ConfigModule],
   controllers: [
     UuidV1Controller,
     UuidV3Controller,
@@ -44,6 +46,7 @@ const sha1HashProvider: ClassProvider<Sha1HashProvider> = {
     randomBytesProvider,
     md5HashProvider,
     sha1HashProvider,
+    DatabaseConnection,
     GenerateUuidV1Handler,
     GenerateUuidV3Handler,
     GenerateUuidV4Handler,

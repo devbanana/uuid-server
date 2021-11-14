@@ -16,6 +16,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({ transform: true, stopAtFirstError: true }),
   );
+  app.enableShutdownHooks();
   setupSwagger(app);
   await app.listen(3000);
 }

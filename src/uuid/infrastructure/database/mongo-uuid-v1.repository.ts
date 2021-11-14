@@ -6,7 +6,6 @@ import { UuidV1 } from '../../domain/time-based/uuid-v1';
 import { UuidTime } from '../../domain/time-based/uuid-time';
 import { Collection } from 'mongodb';
 import { ClockSequence } from '../../domain/time-based/clock-sequence';
-import { OnEvent } from '@nestjs/event-emitter';
 import { UuidV1Schema } from './schemas/uuid-v1.schema';
 
 @Injectable()
@@ -74,7 +73,6 @@ export class MongoUuidV1Repository implements UuidV1Repository {
     );
   }
 
-  @OnEvent('uuid.v1.generated')
   async save(uuid: UuidV1): Promise<void> {
     await this.uuids.insertOne({
       type: 'rfc4122',

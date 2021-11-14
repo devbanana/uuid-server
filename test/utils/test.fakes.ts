@@ -52,9 +52,11 @@ export class FakeUuidV1Repository implements UuidV1Repository {
   private readonly uuids: UuidV1[] = [];
   private readonly lastUuid: Map<number, UuidV1> = new Map();
 
-  add(uuid: UuidV1): void {
+  save(uuid: UuidV1): Promise<void> {
     this.uuids.push(uuid);
     this.lastUuid.set(uuid.node.asNumber(), uuid);
+
+    return Promise.resolve(undefined);
   }
 
   countUuidsByNode(node: Node): Promise<number> {

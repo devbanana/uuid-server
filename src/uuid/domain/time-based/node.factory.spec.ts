@@ -37,7 +37,7 @@ describe('NodeFactory', () => {
     randomBytesProvider.addRandomValue(bytes1);
     randomBytesProvider.addRandomValue(bytes2);
 
-    uuidV1Repository.add(
+    await uuidV1Repository.save(
       UuidV1.fromRfc4122(`475573f2-4312-11ec-ae71-${bytes1.toString('hex')}`),
     );
 

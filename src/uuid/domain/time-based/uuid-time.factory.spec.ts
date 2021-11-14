@@ -36,7 +36,7 @@ describe('UuidTimeFactory', () => {
   });
 
   it('returns the next nanosecond interval if given time has been used', async () => {
-    uuidV1Repository.add(
+    await uuidV1Repository.save(
       UuidV1.create(UuidTime.fromString(today), clockSequence, node),
     );
 
@@ -47,7 +47,7 @@ describe('UuidTimeFactory', () => {
   });
 
   it('returns the next nanosecond interval if current time has been used', async () => {
-    uuidV1Repository.add(
+    await uuidV1Repository.save(
       UuidV1.create(UuidTime.fromString(today), clockSequence, node),
     );
     clock.time = new Date(today).getTime();
@@ -60,7 +60,7 @@ describe('UuidTimeFactory', () => {
 
   it('throws an error if no more nanosecond intervals are available', async () => {
     for (let ns = 0; ns < 1000000; ns += 100) {
-      uuidV1Repository.add(
+      await uuidV1Repository.save(
         UuidV1.create(
           UuidTime.fromString(today).withAddedNanoseconds(ns),
           clockSequence,

@@ -49,8 +49,8 @@ describe('ClockSequenceFactory', () => {
   });
 
   describe('for an existing node ID', () => {
-    beforeEach(() => {
-      uuidV1Repository.add(
+    beforeEach(async () => {
+      await uuidV1Repository.save(
         UuidV1.create(
           UuidTime.fromString(today),
           ClockSequence.fromNumber(0x134f),

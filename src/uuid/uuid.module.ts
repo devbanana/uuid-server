@@ -15,6 +15,8 @@ import { Md5HashProvider } from './domain/name-based/md5-hash.provider';
 import { CryptoMd5HashProvider } from './infrastructure/crypto-md5-hash.provider';
 import { Sha1HashProvider } from './domain/name-based/sha1-hash.provider';
 import { CryptoSha1HashProvider } from './infrastructure/crypto-sha1-hash.provider';
+import { SystemClock } from './infrastructure/system-clock';
+import { Clock } from './domain/time-based/clock';
 import { DatabaseConnection } from './infrastructure/database.connection';
 import { ConfigModule } from '@nestjs/config';
 import { UuidTimeFactory } from './domain/time-based/uuid-time.factory';
@@ -36,6 +38,11 @@ const sha1HashProvider: ClassProvider<Sha1HashProvider> = {
   useClass: CryptoSha1HashProvider,
 };
 
+const clock: ClassProvider<Clock> = {
+  provide: Clock,
+  useClass: SystemClock,
+};
+
 @Module({
   imports: [CqrsModule, ConfigModule],
   controllers: [
@@ -52,6 +59,7 @@ const sha1HashProvider: ClassProvider<Sha1HashProvider> = {
     UuidTimeFactory,
     ClockSequenceFactory,
     NodeFactory,
+    clock,
     DatabaseConnection,
     GenerateUuidV1Handler,
     GenerateUuidV3Handler,

@@ -15,6 +15,8 @@ import { Md5HashProvider } from './domain/name-based/md5-hash.provider';
 import { CryptoMd5HashProvider } from './infrastructure/crypto-md5-hash.provider';
 import { Sha1HashProvider } from './domain/name-based/sha1-hash.provider';
 import { CryptoSha1HashProvider } from './infrastructure/crypto-sha1-hash.provider';
+import { MongoUuidV1Repository } from './infrastructure/mongo-uuid-v1.repository';
+import { UuidV1Repository } from './domain/time-based/uuid-v1.repository';
 import { SystemClock } from './infrastructure/system-clock';
 import { Clock } from './domain/time-based/clock';
 import { DatabaseConnection } from './infrastructure/database.connection';
@@ -38,6 +40,11 @@ const sha1HashProvider: ClassProvider<Sha1HashProvider> = {
   useClass: CryptoSha1HashProvider,
 };
 
+const uuidV1Repository: ClassProvider<UuidV1Repository> = {
+  provide: UuidV1Repository,
+  useClass: MongoUuidV1Repository,
+};
+
 const clock: ClassProvider<Clock> = {
   provide: Clock,
   useClass: SystemClock,
@@ -59,6 +66,7 @@ const clock: ClassProvider<Clock> = {
     UuidTimeFactory,
     ClockSequenceFactory,
     NodeFactory,
+    uuidV1Repository,
     clock,
     DatabaseConnection,
     GenerateUuidV1Handler,

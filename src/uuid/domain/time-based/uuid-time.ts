@@ -44,6 +44,10 @@ export class UuidTime {
     return new UuidTime(new Date(ms));
   }
 
+  static fromDate(date: Date): UuidTime {
+    return new UuidTime(date);
+  }
+
   withAddedNanoseconds(ns: number): UuidTime {
     return new UuidTime(this.time, ns);
   }
@@ -58,6 +62,10 @@ export class UuidTime {
 
   get nsOffset(): number {
     return this.nanoseconds;
+  }
+
+  get date(): Date {
+    return this.time;
   }
 
   compare(time: UuidTime): -1 | 0 | 1 {

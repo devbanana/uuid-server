@@ -16,6 +16,18 @@ describe('UuidTime', () => {
     );
   });
 
+  it('can accept a date', () => {
+    const date = new Date('2021-11-14T01:56:42.850Z');
+    const time = UuidTime.fromDate(date);
+    expect(time.ms).toBe(date.getTime() - gregorianStart);
+  });
+
+  it('should not accept an invalid date', () => {
+    expect(() => UuidTime.fromDate(new Date('foo'))).toThrowError(
+      'time must be a valid date string',
+    );
+  });
+
   it('can accept milliseconds', () => {
     expect(UuidTime.fromMilliseconds(1_634_451_225_740).ms).toBe(
       1_634_451_225_740 - gregorianStart,
@@ -63,6 +75,12 @@ describe('UuidTime', () => {
       UuidTime.fromMilliseconds(1000 * 60 * 60 * 24).withAddedNanoseconds(500)
         .nsOffset,
     ).toBe(500);
+  });
+
+  it('can be converted to a date', () => {
+    const date = new Date('2021-11-14T02:00:32.525Z');
+    const time = UuidTime.fromMilliseconds(date.getTime());
+    expect(time.date).toStrictEqual(date);
   });
 
   it('can compare another time', () => {

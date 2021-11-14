@@ -4,11 +4,12 @@ import { UuidV1Repository } from '../domain/time-based/uuid-v1.repository';
 import { Node } from '../domain/time-based/node';
 import { UuidV1 } from '../domain/time-based/uuid-v1';
 import { UuidTime } from '../domain/time-based/uuid-time';
-import { Collection, Document, ObjectId } from 'mongodb';
+import { Collection, Document } from 'mongodb';
 import { ClockSequence } from '../domain/time-based/clock-sequence';
+import { OnEvent } from '@nestjs/event-emitter';
 
-interface UuidSchema extends Document {
-  _id: ObjectId;
+export interface UuidSchema extends Document {
+  type: string;
   version: number;
   date: Date;
   nsOffset: number;
@@ -79,5 +80,17 @@ export class MongoUuidV1Repository implements UuidV1Repository {
       ClockSequence.fromNumber(result.clockSequence),
       Node.fromNumber(result.node),
     );
+  }
+
+  @OnEvent('uuid.v1.generated')
+  async save(uuid: UuidV1): Promise<void> {
+    await this.uuids.insertOne({
+      type: 'rfc4122',
+      version: 1,
+      date: uuid.time.date,
+      nsOffset: uuid.time.nsOffset,
+      clockSequence: uuid.clockSequence.asNumber(),
+      node: uuid.node.asNumber(),
+    });
   }
 }

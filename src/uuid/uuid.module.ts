@@ -24,6 +24,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UuidTimeFactory } from './domain/time-based/uuid-time.factory';
 import { ClockSequenceFactory } from './domain/time-based/clock-sequence.factory';
 import { NodeFactory } from './domain/time-based/node.factory';
+import { TimeBasedUuidGeneratedHandler } from './application/time-based/time-based-uuid-generated.handler';
 
 const randomBytesProvider: ClassProvider<RandomBytesProvider> = {
   provide: RandomBytesProvider,
@@ -73,6 +74,7 @@ const clock: ClassProvider<Clock> = {
     GenerateUuidV3Handler,
     GenerateUuidV4Handler,
     GenerateUuidV5Handler,
+    TimeBasedUuidGeneratedHandler,
   ],
 })
 export class UuidModule {}

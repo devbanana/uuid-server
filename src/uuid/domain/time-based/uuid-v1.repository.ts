@@ -11,4 +11,6 @@ export abstract class UuidV1Repository {
   ): Promise<UuidV1 | undefined>;
 
   abstract getLastCreatedUuidByNode(node: Node): Promise<UuidV1 | undefined>;
+
+  abstract save(uuid: UuidV1): Promise<void>;
 }

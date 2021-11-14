@@ -20,11 +20,16 @@ import { Clock } from '../../domain/time-based/clock';
 import { ClockSequence } from '../../domain/time-based/clock-sequence';
 import { Node } from '../../domain/time-based/node';
 import { UuidTime } from '../../domain/time-based/uuid-time';
+import { TimeBasedUuidGeneratedEvent } from './time-based-uuid-generated.event';
+import { EventBus } from '@nestjs/cqrs';
 
 describe('GenerateUuidV1Handler', () => {
   let handler: GenerateUuidV1Handler;
   let randomBytesProvider: FakeRandomBytesProvider;
   let clock: FakeClock;
+  const eventBus = {
+    publish: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -37,6 +42,7 @@ describe('GenerateUuidV1Handler', () => {
         { provide: RandomBytesProvider, useClass: FakeRandomBytesProvider },
         { provide: Clock, useClass: FakeClock },
         { provide: UuidV1Repository, useClass: FakeUuidV1Repository },
+        { provide: EventBus, useValue: eventBus },
       ],
     }).compile();
 
@@ -117,4 +123,21 @@ describe('GenerateUuidV1Handler', () => {
       expect(response.uuid).toBe(result);
     },
   );
+
+  it('should fire an event', async () => {
+    randomBytesProvider.addRandomValue(Buffer.from('e1d89f5bec1c', 'hex'));
+    randomBytesProvider.addRandomValue(Buffer.from('0e67', 'hex'));
+    clock.time = new Date('2021-11-14T04:26:12.463Z').getTime();
+
+    const response = await handler.execute(new GenerateUuidV1Command());
+
+    expect(eventBus.publish).toHaveBeenCalledTimes(1);
+    expect(eventBus.publish).toHaveBeenCalledWith(
+      new TimeBasedUuidGeneratedEvent(UuidV1.fromRfc4122(response.uuid)),
+    );
+  });
+
+  afterEach(() => {
+    eventBus.publish.mockClear();
+  });
 });

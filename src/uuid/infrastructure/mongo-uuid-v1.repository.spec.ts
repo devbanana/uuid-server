@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoUuidV1Repository } from './mongo-uuid-v1.repository';
+import { MongoUuidV1Repository, UuidSchema } from './mongo-uuid-v1.repository';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseConnection } from './database.connection';
 import { Node } from '../domain/time-based/node';
@@ -96,6 +96,25 @@ describe('MysqlUuidV1Repository', () => {
     });
   });
 
+  it('saves generated UUIDs', async () => {
+    const uuid = UuidV1.create(
+      UuidTime.fromMilliseconds(now + 6),
+      sequences[1].increment(),
+      nodes[1],
+    );
+
+    await provider.save(uuid);
+
+    const result = await connection.db.collection<UuidSchema>('uuids').findOne({
+      date: new Date(now + 6),
+      nsOffset: 0,
+      clockSequence: sequences[1].increment().asNumber(),
+      node: nodes[1].asNumber(),
+    });
+
+    expect(result).not.toBeNull();
+  });
+
   afterAll(async () => {
     await connection.db.dropCollection('uuids');
     await connection.onModuleDestroy();
@@ -124,6 +143,7 @@ async function createFixtures(connection: DatabaseConnection) {
   const promises: Promise<InsertOneResult>[] = [];
   uuids.forEach(uuid => {
     const promise = uuidCollection.insertOne({
+      type: 'rfc4122',
       version: uuid.version,
       date: uuid.time.date,
       nsOffset: uuid.time.nsOffset,

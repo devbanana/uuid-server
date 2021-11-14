@@ -1,15 +1,12 @@
-import {
-  ErrorResponse,
-  UuidFormatMap,
-  UuidMethod,
-  UuidMock,
-} from './test.types';
+import { ErrorResponse, UuidFormatMap, UuidMethod } from './test.types';
 import { Test, TestingModule, TestingModuleBuilder } from '@nestjs/testing';
 import { UuidModule } from '../../src/uuid/uuid.module';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as supertest from 'supertest';
 import { Uuid } from '../../src/uuid/domain/uuid';
 import { UuidFormats } from '../../src/uuid/domain/uuid-formats';
+import { ConfigModule } from '@nestjs/config';
+import { GenerateUuidViewModel } from '../../src/uuid/application/generate-uuid.view-model';
 
 type ProviderOverride = { provider: unknown; override: unknown };
 
@@ -17,7 +14,7 @@ export async function initiateApp(
   overrides: ProviderOverride[],
 ): Promise<INestApplication> {
   const builder: TestingModuleBuilder = Test.createTestingModule({
-    imports: [UuidModule],
+    imports: [UuidModule, ConfigModule.forRoot()],
   });
 
   for (const override of overrides) {
@@ -59,17 +56,6 @@ export function generateUuids(uuid: Uuid): UuidFormatMap {
   };
 }
 
-export function createMockUuid(uuids: UuidFormatMap): UuidMock {
-  return {
-    asRfc4122: jest.fn(() => uuids.rfc4122),
-    asBase32: jest.fn(() => uuids.base32),
-    asBase58: jest.fn(() => uuids.base58),
-    asBase64: jest.fn(() => uuids.base64),
-    asBinary: jest.fn(() => uuids.binary),
-    asNumber: jest.fn(() => uuids.number),
-  };
-}
-
 export function getFormatMethod<T extends UuidFormats>(
   property: T,
 ): UuidMethod<T> {
@@ -88,3 +74,14 @@ export function isErrorResponse(body: unknown): body is ErrorResponse {
 }
 
 export const NO_ERROR_RESPONSE_MESSAGE = 'Expected an error response';
+
+export function isGenerateUuidResponse(
+  body: unknown,
+): body is GenerateUuidViewModel {
+  return (
+    typeof body === 'object' &&
+    body !== null &&
+    'uuid' in body &&
+    typeof (<{ uuid: unknown }>body).uuid === 'string'
+  );
+}

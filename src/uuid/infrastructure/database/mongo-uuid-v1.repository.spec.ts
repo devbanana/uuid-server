@@ -6,7 +6,7 @@ import { Node } from '../../domain/time-based/node';
 import { UuidTime } from '../../domain/time-based/uuid-time';
 import { UuidV1 } from '../../domain/time-based/uuid-v1';
 import { ClockSequence } from '../../domain/time-based/clock-sequence';
-import { InsertOneResult } from 'mongodb';
+import { Binary, InsertOneResult } from 'mongodb';
 import { UuidV1Schema } from './schemas/uuid-v1.schema';
 
 const nodes: Node[] = [
@@ -108,12 +108,7 @@ describe('MysqlUuidV1Repository', () => {
 
     const result = await connection.db
       .collection<UuidV1Schema>('uuids')
-      .findOne({
-        date: new Date(now + 6),
-        nsOffset: 0,
-        clockSequence: sequences[1].increment().asNumber(),
-        node: nodes[1].asNumber(),
-      });
+      .findOne({ uuid: new Binary(uuid.asBuffer()) });
 
     expect(result).not.toBeNull();
   });
@@ -125,7 +120,7 @@ describe('MysqlUuidV1Repository', () => {
 });
 
 async function createFixtures(connection: DatabaseConnection) {
-  const uuidCollection = connection.db.collection('uuids');
+  const uuidCollection = connection.db.collection<UuidV1Schema>('uuids');
 
   const uuids: UuidV1[] = [
     // First node
@@ -147,7 +142,8 @@ async function createFixtures(connection: DatabaseConnection) {
   uuids.forEach(uuid => {
     const promise = uuidCollection.insertOne({
       type: 'rfc4122',
-      version: uuid.version,
+      version: 1,
+      uuid: new Binary(uuid.asBuffer()),
       date: uuid.time.date,
       nsOffset: uuid.time.nsOffset,
       clockSequence: uuid.clockSequence.asNumber(),

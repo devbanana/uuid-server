@@ -4,8 +4,7 @@ import { UuidV1Repository } from '../../domain/time-based/uuid-v1.repository';
 import { Node } from '../../domain/time-based/node';
 import { UuidV1 } from '../../domain/time-based/uuid-v1';
 import { UuidTime } from '../../domain/time-based/uuid-time';
-import { Collection } from 'mongodb';
-import { ClockSequence } from '../../domain/time-based/clock-sequence';
+import { Binary, Collection } from 'mongodb';
 import { UuidV1Schema } from './schemas/uuid-v1.schema';
 
 @Injectable()
@@ -66,17 +65,14 @@ export class MongoUuidV1Repository implements UuidV1Repository {
   }
 
   private static createUuidFromSchema(result: UuidV1Schema): UuidV1 {
-    return UuidV1.create(
-      UuidTime.fromDate(result.date).withAddedNanoseconds(result.nsOffset),
-      ClockSequence.fromNumber(result.clockSequence),
-      Node.fromNumber(result.node),
-    );
+    return UuidV1.fromBuffer(result.uuid.buffer);
   }
 
   async save(uuid: UuidV1): Promise<void> {
     await this.uuids.insertOne({
       type: 'rfc4122',
       version: 1,
+      uuid: new Binary(uuid.asBuffer()),
       date: uuid.time.date,
       nsOffset: uuid.time.nsOffset,
       clockSequence: uuid.clockSequence.asNumber(),

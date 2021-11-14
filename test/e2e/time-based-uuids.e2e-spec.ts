@@ -15,6 +15,8 @@ import { Rfc4122Uuid } from '../../src/uuid/domain/rfc4122-uuid';
 import { UuidV1 } from '../../src/uuid/domain/time-based/uuid-v1';
 import { Node } from '../../src/uuid/domain/time-based/node';
 import { UuidFormats } from '../../src/uuid/domain/uuid-formats';
+import { Binary } from 'mongodb';
+import { Buffer } from 'buffer';
 
 describe('uuid-v1', () => {
   let app: INestApplication;
@@ -131,13 +133,17 @@ describe('uuid-v1', () => {
   `(
     'should format the UUID as $format',
     async ({ format, uuid }: { format: UuidFormats; uuid: string }) => {
-      const time = `2021-11-14T18:35:39.948Z`;
+      const time = '2021-11-14T18:35:39.948Z';
       const node = 'c7:c6:64:f8:40:93';
 
       // Prime the database with the expected node
+      // noinspection SpellCheckingInspection
       await uuids.insertOne({
         type: 'rfc4122',
         version: 1,
+        uuid: new Binary(
+          Buffer.from('aabc4fb0457911ec9abac7c664f84093', 'hex'),
+        ),
         date: new Date(new Date(time).getTime() - 1),
         nsOffset: 0,
         clockSequence: 0x1aba,

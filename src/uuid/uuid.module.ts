@@ -17,6 +17,9 @@ import { Sha1HashProvider } from './domain/name-based/sha1-hash.provider';
 import { CryptoSha1HashProvider } from './infrastructure/crypto-sha1-hash.provider';
 import { DatabaseConnection } from './infrastructure/database.connection';
 import { ConfigModule } from '@nestjs/config';
+import { UuidTimeFactory } from './domain/time-based/uuid-time.factory';
+import { ClockSequenceFactory } from './domain/time-based/clock-sequence.factory';
+import { NodeFactory } from './domain/time-based/node.factory';
 
 const randomBytesProvider: ClassProvider<RandomBytesProvider> = {
   provide: RandomBytesProvider,
@@ -46,6 +49,9 @@ const sha1HashProvider: ClassProvider<Sha1HashProvider> = {
     randomBytesProvider,
     md5HashProvider,
     sha1HashProvider,
+    UuidTimeFactory,
+    ClockSequenceFactory,
+    NodeFactory,
     DatabaseConnection,
     GenerateUuidV1Handler,
     GenerateUuidV3Handler,

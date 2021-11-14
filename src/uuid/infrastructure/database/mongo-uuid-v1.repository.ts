@@ -15,18 +15,8 @@ export class MongoUuidV1Repository implements UuidV1Repository {
     this.uuids = connection.db.collection('uuids');
   }
 
-  async countUuidsByNode(node: Node): Promise<number> {
-    const result = await this.uuids
-      .aggregate<{ numUuids: number }>([
-        { $match: { version: 1, node: node.asNumber() } },
-        { $count: 'numUuids' },
-      ])
-      .next();
-    if (result === null) {
-      return 0;
-    }
-
-    return result.numUuids;
+  countUuidsByNode(node: Node): Promise<number> {
+    return this.uuids.countDocuments({ version: 1, node: node.asNumber() });
   }
 
   async getLastCreatedUuidByNode(node: Node): Promise<UuidV1 | undefined> {

@@ -54,4 +54,17 @@ describe('Node', () => {
       ).toThrowError('Node ID must be 48 bits');
     });
   });
+
+  describe('from number', () => {
+    it('can be accepted', () => {
+      const node = Node.fromNumber(0xffa1255017b5);
+      expect(node.asNumber()).toBe(281_067_580_823_477);
+    });
+
+    it('cannot be more than 48 bits', () => {
+      expect(() => Node.fromNumber(0x9aafb8ba7e05ea)).toThrowError(
+        'Node ID must be 48 bits',
+      );
+    });
+  });
 });

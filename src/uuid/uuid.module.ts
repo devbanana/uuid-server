@@ -10,11 +10,11 @@ import { GenerateUuidV5Handler } from './application/name-based/generate-uuid-v5
 import { UuidV4Controller } from './infrastructure/uuid-v4.controller';
 import { GenerateUuidV4Handler } from './application/random/generate-uuid-v4.handler';
 import { RandomBytesProvider } from './domain/random-bytes.provider';
-import { CryptoRandomBytesProvider } from './infrastructure/crypto-random-bytes.provider';
+import { CryptoRandomBytesProvider } from './infrastructure/crypto/crypto-random-bytes.provider';
 import { Md5HashProvider } from './domain/name-based/md5-hash.provider';
-import { CryptoMd5HashProvider } from './infrastructure/crypto-md5-hash.provider';
+import { CryptoMd5HashProvider } from './infrastructure/crypto/crypto-md5-hash.provider';
 import { Sha1HashProvider } from './domain/name-based/sha1-hash.provider';
-import { CryptoSha1HashProvider } from './infrastructure/crypto-sha1-hash.provider';
+import { CryptoSha1HashProvider } from './infrastructure/crypto/crypto-sha1-hash.provider';
 import { MongoUuidV1Repository } from './infrastructure/mongo-uuid-v1.repository';
 import { UuidV1Repository } from './domain/time-based/uuid-v1.repository';
 import { SystemClock } from './infrastructure/system-clock';

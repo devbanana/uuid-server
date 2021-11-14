@@ -1,4 +1,4 @@
-import { RandomBytesProvider } from '../domain/random-bytes.provider';
+import { RandomBytesProvider } from '../../domain/random-bytes.provider';
 import { Buffer } from 'buffer';
 import { randomBytes } from 'crypto';
 

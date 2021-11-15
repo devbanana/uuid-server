@@ -1,12 +1,12 @@
 import { GenerateUuidV1Command } from './generate-uuid-v1.command';
-import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { GenerateUuidViewModel } from '../generate-uuid.view-model';
 import { UuidFormatter } from '../../domain/uuid-formatter';
 import { UuidV1 } from '../../domain/time-based/uuid-v1';
 import { UuidTimeFactory } from '../../domain/time-based/uuid-time.factory';
 import { NodeFactory } from '../../domain/time-based/node.factory';
 import { ClockSequenceFactory } from '../../domain/time-based/clock-sequence.factory';
-import { TimeBasedUuidGeneratedEvent } from './time-based-uuid-generated.event';
+import { UuidV1Repository } from '../../domain/time-based/uuid-v1.repository';
 
 @CommandHandler(GenerateUuidV1Command)
 export class GenerateUuidV1Handler
@@ -17,7 +17,7 @@ export class GenerateUuidV1Handler
     private readonly clockSequenceFactory: ClockSequenceFactory,
     private readonly nodeFactory: NodeFactory,
     private readonly formatter: UuidFormatter,
-    private readonly eventBus: EventBus,
+    private readonly uuidV1Repository: UuidV1Repository,
   ) {}
 
   async execute(
@@ -29,7 +29,8 @@ export class GenerateUuidV1Handler
 
     const uuid = UuidV1.create(time, clockSequence, node);
 
-    this.eventBus.publish(new TimeBasedUuidGeneratedEvent(uuid));
+    // Intentionally allow to pass through without awaiting since we don't need the result
+    void this.uuidV1Repository.save(uuid);
 
     return new GenerateUuidViewModel(
       this.formatter.format(uuid, command.format),

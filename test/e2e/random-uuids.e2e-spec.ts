@@ -1,7 +1,6 @@
 import {
   closeApp,
   createRequest,
-  dropCollectionIfExists,
   generateUuids,
   initiateApp,
 } from '../utils/test.helpers';
@@ -65,7 +64,7 @@ describe('Random UUIDs', () => {
   );
 
   afterEach(async () => {
-    await dropCollectionIfExists(connection, 'uuids');
+    await connection.db.collection('uuids').deleteMany({ version: 4 });
     await closeApp(app);
   });
 });

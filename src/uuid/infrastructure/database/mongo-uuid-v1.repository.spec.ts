@@ -114,7 +114,7 @@ describe('MongoUuidV1Repository', () => {
   });
 
   afterAll(async () => {
-    await connection.db.dropCollection('uuids');
+    await connection.db.collection('uuids').deleteMany({ version: 1 });
     await connection.onModuleDestroy();
   });
 });

@@ -37,7 +37,7 @@ describe('MongoUuidV4Repository', () => {
   });
 
   afterEach(async () => {
-    await uuids.drop();
+    await uuids.deleteMany({ version: 4 });
     await connection.client.close();
   });
 });

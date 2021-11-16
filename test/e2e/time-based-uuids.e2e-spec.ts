@@ -3,7 +3,6 @@ import { INestApplication } from '@nestjs/common';
 import {
   closeApp,
   createRequest,
-  dropCollectionIfExists,
   initiateApp,
   isErrorResponse,
   isGenerateUuidResponse,
@@ -171,7 +170,7 @@ describe('uuid-v1', () => {
   });
 
   afterEach(async () => {
-    await dropCollectionIfExists(connection, 'uuids');
+    await uuids.deleteMany({ version: 1 });
     await closeApp(app);
   });
 });

@@ -86,16 +86,3 @@ export function isGenerateUuidResponse(
     typeof (<{ uuid: unknown }>body).uuid === 'string'
   );
 }
-
-export async function dropCollectionIfExists(
-  connection: DatabaseConnection,
-  collectionName: string,
-) {
-  const collection = await connection.db
-    .listCollections({ name: collectionName })
-    .next();
-
-  if (collection !== null) {
-    await connection.db.dropCollection(collectionName);
-  }
-}

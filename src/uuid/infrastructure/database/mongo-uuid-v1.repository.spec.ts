@@ -21,7 +21,7 @@ const sequences: ClockSequence[] = [
 
 const now = new Date('2021-11-13T16:07:32.005Z').getTime();
 
-describe('MysqlUuidV1Repository', () => {
+describe('MongoUuidV1Repository', () => {
   let provider: MongoUuidV1Repository;
   let connection: DatabaseConnection;
 

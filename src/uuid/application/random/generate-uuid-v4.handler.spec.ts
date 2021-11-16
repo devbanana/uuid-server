@@ -7,10 +7,14 @@ import { UuidFormats } from '../../domain/uuid-formats';
 import { getFormatMethod } from '../../../../test/utils/test.helpers';
 import { RandomBytesProvider } from '../../domain/random-bytes.provider';
 import { FakeRandomBytesProvider } from '../../../../test/utils/test.fakes';
+import { UuidV4Repository } from '../../domain/random/uuid-v4.repository';
 
 describe('GenerateUuidV4Handler', () => {
   const uuid = UuidV4.fromRfc4122('d3f95d9b-0a28-4cab-932c-66dd719939c1');
   let handler: GenerateUuidV4Handler;
+  const repository = {
+    save: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -18,6 +22,7 @@ describe('GenerateUuidV4Handler', () => {
         GenerateUuidV4Handler,
         UuidFormatter,
         { provide: RandomBytesProvider, useClass: FakeRandomBytesProvider },
+        { provide: UuidV4Repository, useValue: repository },
       ],
     }).compile();
 
@@ -48,4 +53,13 @@ describe('GenerateUuidV4Handler', () => {
       expect(result.uuid).toBe(uuid[getFormatMethod(format)]().toString());
     },
   );
+
+  it('saves the UUID', async () => {
+    const result = await handler.execute(new GenerateUuidV4Command());
+
+    expect(repository.save).toHaveBeenCalled();
+    expect(repository.save).toHaveBeenCalledWith(
+      UuidV4.fromRfc4122(result.uuid),
+    );
+  });
 });

@@ -3,19 +3,19 @@ import { INestApplication } from '@nestjs/common';
 import {
   closeApp,
   createRequest,
+  dropCollectionIfExists,
   initiateApp,
   isErrorResponse,
   isGenerateUuidResponse,
   NO_ERROR_RESPONSE_MESSAGE,
 } from '../utils/test.helpers';
 import { DatabaseConnection } from '../../src/uuid/infrastructure/database/database.connection';
-import { Collection } from 'mongodb';
+import { Binary, Collection } from 'mongodb';
 import { UuidV1Schema } from '../../src/uuid/infrastructure/database/schemas/uuid-v1.schema';
 import { Rfc4122Uuid } from '../../src/uuid/domain/rfc4122-uuid';
 import { UuidV1 } from '../../src/uuid/domain/time-based/uuid-v1';
 import { Node } from '../../src/uuid/domain/time-based/node';
 import { UuidFormats } from '../../src/uuid/domain/uuid-formats';
-import { Binary } from 'mongodb';
 import { Buffer } from 'buffer';
 
 describe('uuid-v1', () => {
@@ -171,14 +171,7 @@ describe('uuid-v1', () => {
   });
 
   afterEach(async () => {
-    const collection = await connection.db
-      .listCollections({ name: 'uuids' })
-      .next();
-
-    if (collection !== null) {
-      await connection.db.dropCollection('uuids');
-    }
-
+    await dropCollectionIfExists(connection, 'uuids');
     await closeApp(app);
   });
 });

@@ -24,6 +24,8 @@ import { ConfigModule } from '@nestjs/config';
 import { UuidTimeFactory } from './domain/time-based/uuid-time.factory';
 import { ClockSequenceFactory } from './domain/time-based/clock-sequence.factory';
 import { NodeFactory } from './domain/time-based/node.factory';
+import { MongoUuidV4Repository } from './infrastructure/database/mongo-uuid-v4.repository';
+import { UuidV4Repository } from './domain/random/uuid-v4.repository';
 
 const randomBytesProvider: ClassProvider<RandomBytesProvider> = {
   provide: RandomBytesProvider,
@@ -40,14 +42,19 @@ const sha1HashProvider: ClassProvider<Sha1HashProvider> = {
   useClass: CryptoSha1HashProvider,
 };
 
+const clock: ClassProvider<Clock> = {
+  provide: Clock,
+  useClass: SystemClock,
+};
+
 const uuidV1Repository: ClassProvider<UuidV1Repository> = {
   provide: UuidV1Repository,
   useClass: MongoUuidV1Repository,
 };
 
-const clock: ClassProvider<Clock> = {
-  provide: Clock,
-  useClass: SystemClock,
+const uuidV4Repository: ClassProvider<UuidV4Repository> = {
+  provide: UuidV4Repository,
+  useClass: MongoUuidV4Repository,
 };
 
 @Module({
@@ -66,8 +73,9 @@ const clock: ClassProvider<Clock> = {
     UuidTimeFactory,
     ClockSequenceFactory,
     NodeFactory,
-    uuidV1Repository,
     clock,
+    uuidV1Repository,
+    uuidV4Repository,
     DatabaseConnection,
     GenerateUuidV1Handler,
     GenerateUuidV3Handler,

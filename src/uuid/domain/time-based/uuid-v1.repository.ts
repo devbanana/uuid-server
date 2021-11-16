@@ -1,8 +1,9 @@
 import { UuidTime } from './uuid-time';
 import { Node } from './node';
 import { UuidV1 } from './uuid-v1';
+import { UuidRepository } from '../uuid.repository';
 
-export abstract class UuidV1Repository {
+export abstract class UuidV1Repository implements UuidRepository {
   abstract countUuidsByNode(node: Node): Promise<number>;
 
   abstract getLastUuidByTimeAndNode(

@@ -7,6 +7,7 @@ import { Uuid } from '../../src/uuid/domain/uuid';
 import { UuidFormats } from '../../src/uuid/domain/uuid-formats';
 import { ConfigModule } from '@nestjs/config';
 import { GenerateUuidViewModel } from '../../src/uuid/application/generate-uuid.view-model';
+import { DatabaseConnection } from '../../src/uuid/infrastructure/database/database.connection';
 
 type ProviderOverride = { provider: unknown; override: unknown };
 
@@ -84,4 +85,17 @@ export function isGenerateUuidResponse(
     'uuid' in body &&
     typeof (<{ uuid: unknown }>body).uuid === 'string'
   );
+}
+
+export async function dropCollectionIfExists(
+  connection: DatabaseConnection,
+  collectionName: string,
+) {
+  const collection = await connection.db
+    .listCollections({ name: collectionName })
+    .next();
+
+  if (collection !== null) {
+    await connection.db.dropCollection(collectionName);
+  }
 }

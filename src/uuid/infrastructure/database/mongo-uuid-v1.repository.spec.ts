@@ -8,6 +8,8 @@ import { UuidV1 } from '../../domain/time-based/uuid-v1';
 import { ClockSequence } from '../../domain/time-based/clock-sequence';
 import { Binary, InsertOneResult } from 'mongodb';
 import { UuidV1Schema } from './schemas/uuid-v1.schema';
+import { Clock } from '../../domain/time-based/clock';
+import { FakeClock } from '../../../../test/utils/test.fakes';
 
 const nodes: Node[] = [
   Node.fromString('0d:5e:ac:59:9e:b6'),
@@ -28,12 +30,18 @@ describe('MongoUuidV1Repository', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule.forRoot()],
-      providers: [MongoUuidV1Repository, DatabaseConnection],
+      providers: [
+        MongoUuidV1Repository,
+        DatabaseConnection,
+        { provide: Clock, useClass: FakeClock },
+      ],
     }).compile();
 
     provider = module.get<MongoUuidV1Repository>(MongoUuidV1Repository);
     connection = module.get<DatabaseConnection>(DatabaseConnection);
     await connection.onModuleInit();
+
+    module.get<Clock, FakeClock>(Clock).time = now;
 
     await createFixtures(connection);
   });
@@ -111,6 +119,7 @@ describe('MongoUuidV1Repository', () => {
       .findOne({ uuid: new Binary(uuid.asBuffer()) });
 
     expect(result).not.toBeNull();
+    expect(result?.created).toStrictEqual(new Date(now));
   });
 
   afterAll(async () => {
@@ -144,6 +153,7 @@ async function createFixtures(connection: DatabaseConnection) {
       type: 'rfc4122',
       version: 1,
       uuid: new Binary(uuid.asBuffer()),
+      created: new Date(now),
       date: uuid.time.date,
       nsOffset: uuid.time.nsOffset,
       clockSequence: uuid.clockSequence.asNumber(),

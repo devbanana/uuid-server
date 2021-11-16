@@ -4,12 +4,16 @@ import { DatabaseConnection } from './database.connection';
 import { UuidV4Schema } from './schemas/uuid-v4.schema';
 import { UuidV4 } from '../../domain/random/uuid-v4';
 import { Binary, Collection } from 'mongodb';
+import { Clock } from '../../domain/time-based/clock';
 
 @Injectable()
 export class MongoUuidV4Repository implements UuidV4Repository {
   private uuids: Collection<UuidV4Schema>;
 
-  constructor(private readonly connection: DatabaseConnection) {
+  constructor(
+    private readonly connection: DatabaseConnection,
+    private readonly clock: Clock,
+  ) {
     this.uuids = connection.db.collection<UuidV4Schema>('uuids');
   }
 
@@ -18,6 +22,7 @@ export class MongoUuidV4Repository implements UuidV4Repository {
       type: 'rfc4122',
       version: 4,
       uuid: new Binary(uuid.asBuffer()),
+      created: new Date(this.clock.now()),
     });
   }
 }

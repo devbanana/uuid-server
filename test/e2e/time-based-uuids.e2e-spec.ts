@@ -133,6 +133,7 @@ describe('uuid-v1', () => {
     'should format the UUID as $format',
     async ({ format, uuid }: { format: UuidFormats; uuid: string }) => {
       const time = '2021-11-14T18:35:39.948Z';
+      const previousUuidTime = new Date(new Date(time).getTime() - 1);
       const node = 'c7:c6:64:f8:40:93';
 
       // Prime the database with the expected node
@@ -143,7 +144,8 @@ describe('uuid-v1', () => {
         uuid: new Binary(
           Buffer.from('aabc4fb0457911ec9abac7c664f84093', 'hex'),
         ),
-        date: new Date(new Date(time).getTime() - 1),
+        created: previousUuidTime,
+        date: previousUuidTime,
         nsOffset: 0,
         clockSequence: 0x1aba,
         node: Node.fromString(node).asNumber(),

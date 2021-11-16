@@ -6,12 +6,16 @@ import { UuidV1 } from '../../domain/time-based/uuid-v1';
 import { UuidTime } from '../../domain/time-based/uuid-time';
 import { Binary, Collection } from 'mongodb';
 import { UuidV1Schema } from './schemas/uuid-v1.schema';
+import { Clock } from '../../domain/time-based/clock';
 
 @Injectable()
 export class MongoUuidV1Repository implements UuidV1Repository {
   private uuids: Collection<UuidV1Schema>;
 
-  constructor(private connection: DatabaseConnection) {
+  constructor(
+    private readonly connection: DatabaseConnection,
+    private readonly clock: Clock,
+  ) {
     this.uuids = connection.db.collection('uuids');
   }
 
@@ -63,6 +67,7 @@ export class MongoUuidV1Repository implements UuidV1Repository {
       type: 'rfc4122',
       version: 1,
       uuid: new Binary(uuid.asBuffer()),
+      created: new Date(this.clock.now()),
       date: uuid.time.date,
       nsOffset: uuid.time.nsOffset,
       clockSequence: uuid.clockSequence.asNumber(),

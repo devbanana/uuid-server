@@ -26,6 +26,8 @@ import { ClockSequenceFactory } from './domain/time-based/clock-sequence.factory
 import { NodeFactory } from './domain/time-based/node.factory';
 import { MongoUuidV4Repository } from './infrastructure/database/mongo-uuid-v4.repository';
 import { UuidV4Repository } from './domain/random/uuid-v4.repository';
+import { MongoUuidV3Repository } from './infrastructure/database/mongo-uuid-v3.repository';
+import { UuidV3Repository } from './domain/name-based/uuid-v3.repository';
 
 const randomBytesProvider: ClassProvider<RandomBytesProvider> = {
   provide: RandomBytesProvider,
@@ -52,6 +54,11 @@ const uuidV1Repository: ClassProvider<UuidV1Repository> = {
   useClass: MongoUuidV1Repository,
 };
 
+const uuidV3Repository: ClassProvider<UuidV3Repository> = {
+  provide: UuidV3Repository,
+  useClass: MongoUuidV3Repository,
+};
+
 const uuidV4Repository: ClassProvider<UuidV4Repository> = {
   provide: UuidV4Repository,
   useClass: MongoUuidV4Repository,
@@ -75,6 +82,7 @@ const uuidV4Repository: ClassProvider<UuidV4Repository> = {
     NodeFactory,
     clock,
     uuidV1Repository,
+    uuidV3Repository,
     uuidV4Repository,
     DatabaseConnection,
     GenerateUuidV1Handler,
